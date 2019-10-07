@@ -21,6 +21,11 @@ sf::mpf::mpf(int v)
 {
 }
 
+sf::mpf::mpf(long long v)
+  : impl(std::shared_ptr<void>(new mpfr::mpreal(v)))
+{
+}
+
 sf::mpf::mpf(double v)
   : impl(std::shared_ptr<void>(new mpfr::mpreal(v)))
 {
@@ -50,13 +55,13 @@ sf::mpf sf::mpf::operator*(const sf::mpf& v) const {
   return mpf(new mpfr::mpreal(res));
 }
 
-sf::mpf sf::mpf::operator*(int b) const {
-  auto res = *static_cast<mpfr::mpreal*>(impl.get()) * b;
+sf::mpf sf::mpf::operator*(int v) const {
+  auto res = *static_cast<mpfr::mpreal*>(impl.get()) * v;
   return mpf(new mpfr::mpreal(res));
 }
 
-sf::mpf sf::mpf::operator*(long long b) const {
-  auto res = *static_cast<mpfr::mpreal*>(impl.get()) * b;
+sf::mpf sf::mpf::operator*(long long v) const {
+  auto res = *static_cast<mpfr::mpreal*>(impl.get()) * v;
   return mpf(new mpfr::mpreal(res));
 }
 
@@ -65,8 +70,13 @@ sf::mpf sf::mpf::operator/(const mpf& v) const {
   return sf::mpf(new mpfr::mpreal(res));
 }
 
-sf::mpf sf::mpf::operator/(int b) const {
-  auto res = *static_cast<mpfr::mpreal*>(impl.get()) / b;
+sf::mpf sf::mpf::operator/(int v) const {
+  auto res = *static_cast<mpfr::mpreal*>(impl.get()) / v;
+  return mpf(new mpfr::mpreal(res));
+}
+
+sf::mpf sf::mpf::operator<<(int v) const {
+  auto res = *static_cast<mpfr::mpreal*>(impl.get()) << v;
   return mpf(new mpfr::mpreal(res));
 }
 
@@ -75,7 +85,7 @@ sf::mpf sf::mpf::operator/=(const mpf& v) const {
 }
 
 bool sf::mpf::operator==(const mpf& v) const {
-  return mpf(new mpfr::mpreal(*static_cast<mpfr::mpreal*>(impl.get()) == *static_cast<mpfr::mpreal*>(v.impl.get())));
+  return *static_cast<mpfr::mpreal*>(impl.get()) == *static_cast<mpfr::mpreal*>(v.impl.get());
 }
 
 bool sf::mpf::operator==(int v) const {
@@ -114,8 +124,20 @@ bool sf::mpf::operator>=(int v) const {
   return *static_cast<mpfr::mpreal*>(impl.get()) >= v;
 }
 
+sf::mpf::operator long long() const {
+  return static_cast<mpfr::mpreal*>(impl.get())->toLLong();
+}
+
+sf::mpf::operator float() const {
+  return static_cast<mpfr::mpreal*>(impl.get())->toFloat();
+}
+
 sf::mpf::operator double() const {
   return static_cast<mpfr::mpreal*>(impl.get())->toDouble();
+}
+
+sf::mpf::operator std::string() const {
+  return static_cast<mpfr::mpreal*>(impl.get())->toString();
 }
 
 sf::mpf sf::mpf::sqrt(const mpf& v) {

@@ -101,7 +101,7 @@ GLuint LoadShaders(const std::string& vertex_file_path, const std::string& fragm
 
 int main() {
   sf::spheroid sphere(1<<16);
-  spaceframe::window::create(1920, 1080, "sf");
+  spaceframe::window::create(720, 400, "spaceframe");
 
   glEnable(GL_DEPTH_TEST);
   glDepthFunc(GL_LESS);
@@ -111,9 +111,9 @@ int main() {
 
   GLuint MatrixID = glGetUniformLocation(programID, "MVP");
 
-  const sf::vec3 camera_position = {sf::mpf(0), sf::mpf(0), sf::mpf((1<<17) + (1<<16))};
+  const sf::vec3 camera_position = {sf::mpf(0), sf::mpf(0), (sf::mpf(1) << 17) + (sf::mpf(1) << 16)};
   const auto camera_translation = sf::mat4::translate(-camera_position);
-  const auto camera_projection = sf::mat4::project(60 * sf::mpf::pi() / 180, sf::mpf(16) / 9, sf::mpf(1), sf::mpf(1<<22));
+  const auto camera_projection = sf::mat4::project(60 * sf::mpf::pi() / 180, sf::mpf(16) / 9, sf::mpf(1), sf::mpf(1) << 22);
 
   GLuint vertex_array_id;
   glGenVertexArrays(1, &vertex_array_id);
@@ -146,7 +146,8 @@ int main() {
   glBindBuffer(GL_ARRAY_BUFFER, buffer_ids[0]);
   glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * vertex_buffer_data.size(), &vertex_buffer_data[0], GL_STATIC_DRAW);
 
-  const auto redraw_target_milliseconds = std::chrono::duration<float, std::ratio<60, 1000>>(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::seconds(1)));
+  using frames_per_millisecond = std::chrono::duration<float, std::ratio<60, 1000>>;
+  const auto redraw_target_milliseconds = frames_per_millisecond(std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::seconds(1)));
   auto last_draw = std::chrono::time_point<std::chrono::steady_clock>();
 
   auto start = std::chrono::steady_clock::now();
@@ -176,7 +177,7 @@ int main() {
       for (int i = 0; i < 20; i++) {
         const auto coords = sf::spheroid::tetras[i].point_to_coords(p);
         if (sf::spheroid::tetras[i].is_point_in_bounds(v)) {
-          //spaceframe::log::debug("%02d %ld %ld %ld %ld", i, coords.a, coords.b, coords.c, coords.d);
+          //spaceframe::log::debug("%02d %lld %lld %lld %lld", i, coords.a, coords.b, coords.c, coords.d);
           for (int j = 0; j < 3; j++) {
             *curr_color++ = .3f;
             *curr_color++ = .5f;

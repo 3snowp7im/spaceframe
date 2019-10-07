@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <string>
 
 namespace sf {
 
@@ -11,6 +12,7 @@ namespace sf {
     static const mpf& pi();
     mpf();
     mpf(int);
+    mpf(long long);
     mpf(double);
     mpf operator-() const;
     mpf operator+(const mpf&) const;
@@ -21,6 +23,7 @@ namespace sf {
     mpf operator*(long long) const;
     mpf operator/(int) const;
     mpf operator/(const mpf&) const;
+    mpf operator<<(int) const;
     mpf operator/=(const mpf&) const;
     bool operator==(const mpf&) const;
     bool operator==(int) const;
@@ -32,7 +35,10 @@ namespace sf {
     bool operator>(int) const;
     bool operator>=(const mpf&) const;
     bool operator>=(int) const;
+    operator long long() const;
+    operator float() const;
     operator double() const;
+    operator std::string() const;
     friend mpf operator+(int, const mpf&);
     friend mpf operator-(int, const mpf&);
     friend mpf operator*(int, const mpf&);

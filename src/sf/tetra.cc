@@ -1,5 +1,7 @@
 #include "tetra.h"
 
+const sf::tetra::coord_t sf::tetra::coord_max = 0x7fffffffffffffffll;
+
 sf::tetra::tetra(const qtrn& orientation)
   : orientation(orientation)
 {
@@ -16,18 +18,23 @@ const std::array<sf::vec3, 3> sf::tetra::face_vertices = {
 };
 
 static const std::array<sf::vec3, 4> normals = {
+  sf::vec3(sf::mpf(0), sf::mpf(0), sf::mpf(1)),
   sf::tetra::face_vertices[0] * sf::tetra::face_vertices[1],
   sf::tetra::face_vertices[2] * sf::tetra::face_vertices[0],
   sf::tetra::face_vertices[1] * sf::tetra::face_vertices[2],
-  sf::vec3(sf::mpf(0), sf::mpf(0), sf::mpf(1)),
 };
 
 sf::tetra::coords sf::tetra::point_to_coords(const vec3& v) const {
   const auto u = -orientation * v;
-  return coords(normals[0] ^ u, normals[1] ^ u, normals[2] ^ u, normals[3] ^ u);
+  return coords(
+    static_cast<coord_t>(normals[0] ^ u),
+    coord_max - static_cast<coord_t>(normals[1] ^ u),
+    coord_max - static_cast<coord_t>(normals[2] ^ u),
+    coord_max - static_cast<coord_t>(normals[3] ^ u)
+  );
 }
 
 bool sf::tetra::is_point_in_bounds(const vec3& v) const {
   const auto u = -orientation * v;
-  return (normals[0] ^ u) > 0 && (normals[1] ^ u) > 0 && (normals[2] ^ u) > 0;
+  return (normals[1] ^ u) > 0 && (normals[2] ^ u) > 0 && (normals[3] ^ u) > 0;
 }

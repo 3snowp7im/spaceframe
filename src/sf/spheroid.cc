@@ -218,14 +218,14 @@ sf::vec3 sf::spheroid::point_to_tetra_space(const vec3& v) {
       const auto c = v ^ v;
       // The length is the square root of the dot product.
       const auto m = mpf::sqrt(c);
-      // Calculate the normalized dot product of the z axis and the vector.
+      // Normalize the dot product of the z axis and the vector.
       const auto t = (vec3(mpf(0), mpf(0), mpf(1)) ^ (-tetra.orientation * v)) / m;
       // Calculate the slope of the vector.
       const auto s = mpf::sqrt(1 - t * t) / t;
-      // Now the point that intercepts the face can be calculated.
+      // Calculate the point where the vector intercepts the plane.
       const auto x = m * a;
       const auto y = s * x;
-      // The vector can be scaled using the factor ||p||^2 / ||v||^2.
+      // Scale the vector.
       return v * (x * x + y * y) / c;
     }
   }

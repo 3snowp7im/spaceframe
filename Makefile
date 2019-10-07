@@ -15,7 +15,7 @@ MODULES= \
 TARGET=src/spaceframe/spaceframe
 
 $(TARGET): CXXFLAGS+=-Iinclude
-$(TARGET): LDLIBS+=-lstdc++ -lmpfr -lpthread $(shell pkg-config --libs $(LIBS))
+$(TARGET): LDLIBS+=-lstdc++ -lm -lmpfr -lpthread $(shell pkg-config --libs $(LIBS))
 
 $(TARGET): \
 	$(OBJS) \
