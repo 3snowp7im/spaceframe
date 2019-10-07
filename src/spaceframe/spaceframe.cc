@@ -8,6 +8,7 @@
 #include <GL/glew.h>
 #include "../sf/mat4.h"
 #include "../sf/mpf.h"
+#include "../sf/mpz.h"
 #include "../sf/spheroid.h"
 #include "log.h"
 #include "window.h"

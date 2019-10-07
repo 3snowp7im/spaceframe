@@ -8,6 +8,7 @@ OBJS= \
 
 MODULES= \
 	glfw3 \
+	gmp \
 	sf \
 	mpfr \
 	spdlog \
@@ -15,7 +16,14 @@ MODULES= \
 TARGET=src/spaceframe/spaceframe
 
 $(TARGET): CXXFLAGS+=-Iinclude
-$(TARGET): LDLIBS+=-lstdc++ -lm -lmpfr -lpthread $(shell pkg-config --libs $(LIBS))
+
+$(TARGET): LDLIBS+=\
+	-lgmp \
+	-lm \
+	-lmpfr \
+	-lpthread \
+	-lstdc++ \
+	$(shell pkg-config --libs $(LIBS)) \
 
 $(TARGET): \
 	$(OBJS) \

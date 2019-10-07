@@ -58,4 +58,3 @@ namespace sf {
   sf::mpf operator/(int, const sf::mpf&);
 
 }
-
