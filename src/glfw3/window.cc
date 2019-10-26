@@ -1,7 +1,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <stdexcept>
-#include "../spaceframe/log.h"
+#include "../sf/log.h"
 #include "../spaceframe/window.h"
 
 void spaceframe::window::create(unsigned width, unsigned height, const std::string& title) {
@@ -9,26 +9,26 @@ void spaceframe::window::create(unsigned width, unsigned height, const std::stri
     throw std::runtime_error("Window already created");
   }
   static bool initialized = false;
-  log::debug("Initializing GLFW");
+  sf::log::debug("Initializing GLFW");
   if (!initialized) {
     if (!glfwInit()) {
       throw std::runtime_error("Could not initialize windowing library");
     }
     initialized = true;
   }
-  log::debug("Enabling OpenGL 3.3");
+  sf::log::debug("Enabling OpenGL 3.3");
   glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
   glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
   glfwWindowHint(GLFW_OPENGL_FORWARD_COMPAT, GL_TRUE);
   glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
-  log::debug("Creating window");
+  sf::log::debug("Creating window");
   GLFWwindow* window = glfwCreateWindow(width, height, title.c_str(), nullptr, nullptr);
   if (window == nullptr) {
     glfwTerminate();
     throw std::runtime_error("Could not create window");
   }
   glfwMakeContextCurrent(window);
-  log::debug("Initalizing GLEW");
+  sf::log::debug("Initalizing GLEW");
   glewExperimental = true;
   if (glewInit() != GLEW_OK) {
     throw std::runtime_error("Could not initialize graphics extensions library");

@@ -1,40 +1,69 @@
 #include "tetra.h"
 
-const sf::tetra::coord_t sf::tetra::coord_max = 0x7fffffffffffffffll;
+bool sf::tetra::vertex_access::constructed = false;
 
-sf::tetra::tetra(const qtrn& orientation)
-  : orientation(orientation)
-{
+sf::tetra::vertex_access::vertex_access() {
+  if (constructed) {
+    throw std::runtime_error("Duplicate sf::tetra::vertex_access instance constructed");
+  }
+  constructed = true;
 }
 
-static const auto a =  2 / sf::mpf::sqrt(10 + 2 * sf::mpf::sqrt(5));
-static const auto b = -2 / sf::mpf::sqrt(3 * (10 + 2 * sf::mpf::sqrt(5)));
-static const auto z = sf::mpf::sqrt((5 + 2 * sf::mpf::sqrt(5)) / 15);
+const sf::tetra::coord_t sf::tetra::coord_max = static_cast<long>((~0lu >> 3) + 1);
 
-const std::array<sf::vec3, 3> sf::tetra::face_vertices = {
-  sf::vec3(-a, b, z),
-  sf::vec3( a, b, z),
-  sf::vec3(sf::mpf(0), sf::mpf::sqrt(2 * (5 - mpf::sqrt(5)) / 15), z),
-};
+std::array<sf::vec3<sf::mpf>, 3> sf::tetra::vertex_array;
 
-static const std::array<sf::vec3, 4> normals = {
-  sf::vec3(sf::mpf(0), sf::mpf(0), sf::mpf(1)),
-  sf::tetra::face_vertices[0] * sf::tetra::face_vertices[1],
-  sf::tetra::face_vertices[2] * sf::tetra::face_vertices[0],
-  sf::tetra::face_vertices[1] * sf::tetra::face_vertices[2],
-};
+static std::array<sf::vec3<sf::mpf>, 4> normals;
 
-sf::tetra::coords sf::tetra::point_to_coords(const vec3& v) const {
+void sf::tetra::init() {
+  const auto x = 2 / mpf::sqrt(10 + 2 * mpf::sqrt(5));
+  const auto h = mpf::sqrt(6 / (5 + mpf::sqrt(5)));
+  const auto y = mpf::sqrt(2 * (5 - mpf::sqrt(5)) / 15);
+  const auto z = mpf::sqrt((5 + 2 * mpf::sqrt(5)) / 15);
+  tetra::vertex_array = {{
+    vec3<sf::mpf>(0, y, z).unit(),
+    vec3<sf::mpf>( x, -h + y, z).unit(),
+    vec3<sf::mpf>(-x, -h + y, z).unit(),
+  }};
+  normals = {
+    (sf::tetra::vertices[2] * sf::tetra::vertices[1]).unit(),
+    (sf::tetra::vertices[0] * sf::tetra::vertices[2]).unit(),
+    (sf::tetra::vertices[1] * sf::tetra::vertices[0]).unit(),
+    {0, 0, 1},
+  };
+}
+
+const sf::tetra::vertex_access sf::tetra::vertices;
+
+const sf::vec3<sf::mpf>& sf::tetra::vertex_access::operator[](size_t i) const {
+  return sf::tetra::vertex_array[i];
+}
+
+sf::tetra::tetra() {
+}
+
+sf::tetra::tetra(const qtrn& orientation) :
+  orientation(orientation) {
+}
+
+sf::tetra& sf::tetra::operator=(const tetra& v) {
+  orientation = v.orientation;
+}
+
+bool sf::tetra::is_vertex_in_bounds(const vec3<mpf>& v) const {
   const auto u = -orientation * v;
-  return coords(
-    static_cast<coord_t>(normals[0] ^ u),
-    coord_max - static_cast<coord_t>(normals[1] ^ u),
-    coord_max - static_cast<coord_t>(normals[2] ^ u),
-    coord_max - static_cast<coord_t>(normals[3] ^ u)
+  return (normals[0] ^ u) >= 0 && (normals[1] ^ u) >= 0 && (normals[2] ^ u) >= 0 && (normals[3] ^ u) >= 0;
+}
+
+sf::tetra::vec_t sf::tetra::vec_from_vertex(const vec3<mpf>& v) const {
+  static const auto radius = sf::mpf::sqrt(15 - 6 * sf::mpf::sqrt(5));
+  static const auto height = sf::mpf::sqrt((5 + sf::mpf::sqrt(5)) / 10);
+  const auto u = -orientation * v;
+  return vec_t(
+    coord_max - (normals[0] ^ u) / height,
+    coord_max - (normals[1] ^ u) / height,
+    coord_max - (normals[2] ^ u) / height,
+    (normals[3] ^ u) * radius
   );
 }
 
-bool sf::tetra::is_point_in_bounds(const vec3& v) const {
-  const auto u = -orientation * v;
-  return (normals[1] ^ u) > 0 && (normals[2] ^ u) > 0 && (normals[3] ^ u) > 0;
-}

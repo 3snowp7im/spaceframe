@@ -8,13 +8,14 @@ namespace sf {
   class qtrn {
     std::array<mpf, 4> xyzw;
   public:
-    static qtrn from_axis_angle(const vec3&, const mpf&);
+    static qtrn from_axis_angle(const vec3<mpf>&, const mpf&);
+    qtrn();
     qtrn(const mpf&, const mpf&, const mpf&, const mpf&);
     mpf length() const;
     qtrn unit() const;
     qtrn operator-() const;
     qtrn operator*(const qtrn&) const;
-    vec3 operator*(const vec3&) const;
+    vec3<mpf> operator*(const vec3<mpf>&) const;
     mpf& operator[](size_t n);
     const mpf& operator[](size_t n) const;
     template <typename T> qtrn operator/(const T&) const;

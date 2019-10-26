@@ -2,7 +2,7 @@
 
 #include <memory>
 
-namespace spaceframe {
+namespace sf {
 
   class log {
     static std::shared_ptr<void> impl;

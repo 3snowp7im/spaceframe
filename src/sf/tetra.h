@@ -1,29 +1,36 @@
 #pragma once
 
 #include <array>
+#include <stdexcept>
+#include "mpf.h"
 #include "qtrn.h"
 #include "vec3.h"
+#include "vec4.h"
 
 namespace sf {
 
   class tetra {
+    static void init();
+    static std::array<vec3<mpf>, 3> vertex_array;
   public:
-    static const std::array<vec3, 3> face_vertices;
-    typedef long long coord_t;
+    typedef long coord_t;
+    typedef vec4<coord_t> range_t;
+    typedef vec4<mpf> vec_t;
     static const coord_t coord_max;
-    struct coords {
-      coords(coord_t, coord_t, coord_t, coord_t);
-      coord_t a, b, c, d;
-    };
+    static const class vertex_access {
+      static bool constructed;
+    public:
+      vertex_access();
+      const vec3<mpf>& operator[](size_t) const;
+    } vertices;
+    tetra();
     tetra(const qtrn&);
-    bool is_point_in_bounds(const vec3&) const;
-    coords point_to_coords(const vec3&) const;
-    const qtrn orientation;
+    tetra& operator=(const tetra&);
+    bool is_vertex_in_bounds(const vec3<mpf>&) const;
+    vec_t vec_from_vertex(const vec3<mpf>&) const;
+    qtrn orientation;
+    friend void sf::init();
+    friend const vec3<mpf>& vertex_access::operator[](size_t i) const;
   };
-
-  inline tetra::coords::coords(coord_t a, coord_t b, coord_t c, coord_t d)
-    : a(a), b(b), c(c), d(d)
-  {
-  }
 
 }

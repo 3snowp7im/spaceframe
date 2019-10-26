@@ -8,10 +8,10 @@ OBJS= \
 
 MODULES= \
 	glfw3 \
-	gmp \
-	sf \
-	mpfr \
 	spdlog \
+	sf \
+	gmp \
+	mpfr \
 
 TARGET=src/spaceframe/spaceframe
 

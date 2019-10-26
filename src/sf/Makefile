@@ -2,12 +2,11 @@ ARFLAGS+=-U
 CXXFLAGS+=-I../../include
 
 OBJS= \
-	mat4.o \
+	geom.o \
 	qtrn.o \
+	sf.o \
 	spheroid.o \
 	tetra.o \
-	vec3.o \
-	vec4.o \
 
 TARGET=libsf.a
 
