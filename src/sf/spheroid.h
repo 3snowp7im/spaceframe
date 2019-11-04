@@ -3,30 +3,28 @@
 #include <array>
 #include <sf/sf.h>
 #include "mpf.h"
-#include "tetra.h"
+#include "face.h"
 #include "vec3.h"
 
 namespace sf {
 
   class spheroid {
     static void init();
-    static std::array<tetra, 20> tetra_array;
-  public:
-    static const class tetra_access {
-      static bool constructed;
+    static std::array<face, 20> face_array;
+    class face_access {
     public:
-      tetra_access();
-      const tetra& operator[](size_t) const;
-      std::array<tetra, 20>::const_iterator begin() const;
-      std::array<tetra, 20>::const_iterator end() const;
-    } tetras;
-    static sf::vec3<sf::mpf> vertex_to_tetra_space(const vec3<mpf>&);
-    spheroid(tetra::coord_t);
-    const tetra::coord_t r;
+      const face& operator[](size_t) const;
+      std::array<face, 20>::const_iterator begin() const;
+      std::array<face, 20>::const_iterator end() const;
+    };
+  public:
+    spheroid() = delete;
+    static sf::vec3<sf::mpf> face_pos_from_point(const vec3<mpf>&);
+    constexpr static face_access faces = face_access();
     friend void sf::init();
-    friend const tetra& tetra_access::operator[](size_t i) const;
-    friend std::array<tetra, 20>::const_iterator tetra_access::begin() const;
-    friend std::array<tetra, 20>::const_iterator tetra_access::end() const;
+    friend const face& face_access::operator[](size_t i) const;
+    friend std::array<face, 20>::const_iterator face_access::begin() const;
+    friend std::array<face, 20>::const_iterator face_access::end() const;
   };
 
 }

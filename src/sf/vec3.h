@@ -1,6 +1,7 @@
 #pragma once
 
 #include <array>
+#include <string>
 
 namespace sf {
 
@@ -41,7 +42,8 @@ namespace sf {
   };
 
   template <typename T>
-  inline vec3<T>::vec3() {
+  inline vec3<T>::vec3() :
+    xyz({0, 0, 0}) {
   }
 
   template <typename T>

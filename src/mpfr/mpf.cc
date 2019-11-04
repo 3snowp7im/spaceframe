@@ -22,7 +22,15 @@ sf::mpf::mpf(int v) :
   impl(std::shared_ptr<void>(new mpfr::mpreal(v))) {
 }
 
+sf::mpf::mpf(unsigned v) :
+  impl(std::shared_ptr<void>(new mpfr::mpreal(v))) {
+}
+
 sf::mpf::mpf(long v) :
+  impl(std::shared_ptr<void>(new mpfr::mpreal(v))) {
+}
+
+sf::mpf::mpf(unsigned long v) :
   impl(std::shared_ptr<void>(new mpfr::mpreal(v))) {
 }
 
@@ -69,7 +77,17 @@ sf::mpf sf::mpf::operator+(int v) const {
   return mpf(new mpfr::mpreal(res));
 }
 
+sf::mpf sf::mpf::operator+(unsigned v) const {
+  auto res = *static_cast<mpfr::mpreal*>(impl.get()) + v;
+  return mpf(new mpfr::mpreal(res));
+}
+
 sf::mpf sf::mpf::operator+(long v) const {
+  auto res = *static_cast<mpfr::mpreal*>(impl.get()) + v;
+  return mpf(new mpfr::mpreal(res));
+}
+
+sf::mpf sf::mpf::operator+(unsigned long v) const {
   auto res = *static_cast<mpfr::mpreal*>(impl.get()) + v;
   return mpf(new mpfr::mpreal(res));
 }
@@ -84,7 +102,17 @@ sf::mpf sf::mpf::operator-(int v) const {
   return mpf(new mpfr::mpreal(res));
 }
 
+sf::mpf sf::mpf::operator-(unsigned v) const {
+  auto res = *static_cast<mpfr::mpreal*>(impl.get()) - v;
+  return mpf(new mpfr::mpreal(res));
+}
+
 sf::mpf sf::mpf::operator-(long v) const {
+  auto res = *static_cast<mpfr::mpreal*>(impl.get()) - v;
+  return mpf(new mpfr::mpreal(res));
+}
+
+sf::mpf sf::mpf::operator-(unsigned long v) const {
   auto res = *static_cast<mpfr::mpreal*>(impl.get()) - v;
   return mpf(new mpfr::mpreal(res));
 }
@@ -99,7 +127,17 @@ sf::mpf sf::mpf::operator*(int v) const {
   return mpf(new mpfr::mpreal(res));
 }
 
+sf::mpf sf::mpf::operator*(unsigned v) const {
+  auto res = *static_cast<mpfr::mpreal*>(impl.get()) * v;
+  return mpf(new mpfr::mpreal(res));
+}
+
 sf::mpf sf::mpf::operator*(long v) const {
+  auto res = *static_cast<mpfr::mpreal*>(impl.get()) * v;
+  return mpf(new mpfr::mpreal(res));
+}
+
+sf::mpf sf::mpf::operator*(unsigned long v) const {
   auto res = *static_cast<mpfr::mpreal*>(impl.get()) * v;
   return mpf(new mpfr::mpreal(res));
 }
@@ -114,7 +152,17 @@ sf::mpf sf::mpf::operator/(int v) const {
   return mpf(new mpfr::mpreal(res));
 }
 
+sf::mpf sf::mpf::operator/(unsigned v) const {
+  auto res = *static_cast<mpfr::mpreal*>(impl.get()) / v;
+  return mpf(new mpfr::mpreal(res));
+}
+
 sf::mpf sf::mpf::operator/(long v) const {
+  auto res = *static_cast<mpfr::mpreal*>(impl.get()) / v;
+  return mpf(new mpfr::mpreal(res));
+}
+
+sf::mpf sf::mpf::operator/(unsigned long v) const {
   auto res = *static_cast<mpfr::mpreal*>(impl.get()) / v;
   return mpf(new mpfr::mpreal(res));
 }
@@ -132,7 +180,15 @@ bool sf::mpf::operator==(int v) const {
   return *static_cast<mpfr::mpreal*>(impl.get()) == v;
 }
 
+bool sf::mpf::operator==(unsigned v) const {
+  return *static_cast<mpfr::mpreal*>(impl.get()) == v;
+}
+
 bool sf::mpf::operator==(long v) const {
+  return *static_cast<mpfr::mpreal*>(impl.get()) == v;
+}
+
+bool sf::mpf::operator==(unsigned long v) const {
   return *static_cast<mpfr::mpreal*>(impl.get()) == v;
 }
 
@@ -144,7 +200,15 @@ bool sf::mpf::operator<(int v) const {
   return *static_cast<mpfr::mpreal*>(impl.get()) < v;
 }
 
+bool sf::mpf::operator<(unsigned v) const {
+  return *static_cast<mpfr::mpreal*>(impl.get()) < v;
+}
+
 bool sf::mpf::operator<(long v) const {
+  return *static_cast<mpfr::mpreal*>(impl.get()) < v;
+}
+
+bool sf::mpf::operator<(unsigned long v) const {
   return *static_cast<mpfr::mpreal*>(impl.get()) < v;
 }
 
@@ -156,7 +220,15 @@ bool sf::mpf::operator<=(int v) const {
   return *static_cast<mpfr::mpreal*>(impl.get()) <= v;
 }
 
+bool sf::mpf::operator<=(unsigned v) const {
+  return *static_cast<mpfr::mpreal*>(impl.get()) <= v;
+}
+
 bool sf::mpf::operator<=(long v) const {
+  return *static_cast<mpfr::mpreal*>(impl.get()) <= v;
+}
+
+bool sf::mpf::operator<=(unsigned long v) const {
   return *static_cast<mpfr::mpreal*>(impl.get()) <= v;
 }
 
@@ -168,7 +240,15 @@ bool sf::mpf::operator>(int v) const {
   return *static_cast<mpfr::mpreal*>(impl.get()) > v;
 }
 
+bool sf::mpf::operator>(unsigned v) const {
+  return *static_cast<mpfr::mpreal*>(impl.get()) > v;
+}
+
 bool sf::mpf::operator>(long v) const {
+  return *static_cast<mpfr::mpreal*>(impl.get()) > v;
+}
+
+bool sf::mpf::operator>(unsigned long v) const {
   return *static_cast<mpfr::mpreal*>(impl.get()) > v;
 }
 
@@ -180,7 +260,15 @@ bool sf::mpf::operator>=(int v) const {
   return *static_cast<mpfr::mpreal*>(impl.get()) >= v;
 }
 
+bool sf::mpf::operator>=(unsigned v) const {
+  return *static_cast<mpfr::mpreal*>(impl.get()) >= v;
+}
+
 bool sf::mpf::operator>=(long v) const {
+  return *static_cast<mpfr::mpreal*>(impl.get()) >= v;
+}
+
+bool sf::mpf::operator>=(unsigned long v) const {
   return *static_cast<mpfr::mpreal*>(impl.get()) >= v;
 }
 
@@ -188,7 +276,15 @@ sf::mpf::operator int() const {
   return static_cast<mpfr::mpreal*>(impl.get())->toLong(MPFR_RNDZ);
 }
 
+sf::mpf::operator unsigned() const {
+  return static_cast<mpfr::mpreal*>(impl.get())->toLong(MPFR_RNDZ);
+}
+
 sf::mpf::operator long() const {
+  return static_cast<mpfr::mpreal*>(impl.get())->toLong(MPFR_RNDZ);
+}
+
+sf::mpf::operator unsigned long() const {
   return static_cast<mpfr::mpreal*>(impl.get())->toLong(MPFR_RNDZ);
 }
 
@@ -198,21 +294,6 @@ sf::mpf::operator float() const {
 
 sf::mpf::operator double() const {
   return static_cast<mpfr::mpreal*>(impl.get())->toDouble();
-}
-
-sf::mpf sf::mpf::sqrt(const mpf& v) {
-  auto res = mpfr::sqrt(*static_cast<mpfr::mpreal*>(v.impl.get()));
-  return mpf(new mpfr::mpreal(res));
-}
-
-sf::mpf sf::mpf::sqrt(int v) {
-  auto res = mpfr::sqrt(v);
-  return mpf(new mpfr::mpreal(res));
-}
-
-sf::mpf sf::mpf::sqrt(long v) {
-  auto res = mpfr::sqrt(v);
-  return mpf(new mpfr::mpreal(res));
 }
 
 sf::mpf sf::mpf::acos(const mpf& v) {
@@ -253,6 +334,16 @@ sf::mpf sf::mpf::tan(const mpf& v) {
   return mpf(new mpfr::mpreal(res));
 }
 
+sf::mpf sf::mpf::sqrt(const mpf& v) {
+  auto res = mpfr::sqrt(*static_cast<mpfr::mpreal*>(v.impl.get()));
+  return mpf(new mpfr::mpreal(res));
+}
+
+sf::mpf sf::mpf::sqrt(int v) {
+  auto res = mpfr::sqrt(v);
+  return mpf(new mpfr::mpreal(res));
+}
+
 sf::mpf sf::mpf::operator+=(const mpf& v) {
   auto res = new mpfr::mpreal(*static_cast<mpfr::mpreal*>(impl.get()) + *static_cast<mpfr::mpreal*>(v.impl.get()));
   impl.reset(res);
@@ -265,7 +356,19 @@ sf::mpf sf::mpf::operator+=(int v) {
   return *this;
 }
 
+sf::mpf sf::mpf::operator+=(unsigned v) {
+  auto res = new mpfr::mpreal(*static_cast<mpfr::mpreal*>(impl.get()) + v);
+  impl.reset(res);
+  return *this;
+}
+
 sf::mpf sf::mpf::operator+=(long v) {
+  auto res = new mpfr::mpreal(*static_cast<mpfr::mpreal*>(impl.get()) + v);
+  impl.reset(res);
+  return *this;
+}
+
+sf::mpf sf::mpf::operator+=(unsigned long v) {
   auto res = new mpfr::mpreal(*static_cast<mpfr::mpreal*>(impl.get()) + v);
   impl.reset(res);
   return *this;
@@ -283,7 +386,19 @@ sf::mpf sf::mpf::operator-=(int v) {
   return *this;
 }
 
+sf::mpf sf::mpf::operator-=(unsigned v) {
+  auto res = new mpfr::mpreal(*static_cast<mpfr::mpreal*>(impl.get()) - v);
+  impl.reset(res);
+  return *this;
+}
+
 sf::mpf sf::mpf::operator-=(long v) {
+  auto res = new mpfr::mpreal(*static_cast<mpfr::mpreal*>(impl.get()) - v);
+  impl.reset(res);
+  return *this;
+}
+
+sf::mpf sf::mpf::operator-=(unsigned long v) {
   auto res = new mpfr::mpreal(*static_cast<mpfr::mpreal*>(impl.get()) - v);
   impl.reset(res);
   return *this;
@@ -301,7 +416,19 @@ sf::mpf sf::mpf::operator*=(int v) {
   return *this;
 }
 
+sf::mpf sf::mpf::operator*=(unsigned v) {
+  auto res = new mpfr::mpreal(*static_cast<mpfr::mpreal*>(impl.get()) * v);
+  impl.reset(res);
+  return *this;
+}
+
 sf::mpf sf::mpf::operator*=(long v) {
+  auto res = new mpfr::mpreal(*static_cast<mpfr::mpreal*>(impl.get()) * v);
+  impl.reset(res);
+  return *this;
+}
+
+sf::mpf sf::mpf::operator*=(unsigned long v) {
   auto res = new mpfr::mpreal(*static_cast<mpfr::mpreal*>(impl.get()) * v);
   impl.reset(res);
   return *this;
@@ -319,7 +446,19 @@ sf::mpf sf::mpf::operator/=(int v) {
   return *this;
 }
 
+sf::mpf sf::mpf::operator/=(unsigned v) {
+  auto res = new mpfr::mpreal(*static_cast<mpfr::mpreal*>(impl.get()) / v);
+  impl.reset(res);
+  return *this;
+}
+
 sf::mpf sf::mpf::operator/=(long v) {
+  auto res = new mpfr::mpreal(*static_cast<mpfr::mpreal*>(impl.get()) / v);
+  impl.reset(res);
+  return *this;
+}
+
+sf::mpf sf::mpf::operator/=(unsigned long v) {
   auto res = new mpfr::mpreal(*static_cast<mpfr::mpreal*>(impl.get()) / v);
   impl.reset(res);
   return *this;
@@ -329,7 +468,15 @@ sf::mpf sf::operator+(int a, const sf::mpf& b) {
   return mpf(a) + b;
 }
 
+sf::mpf sf::operator+(unsigned a, const sf::mpf& b) {
+  return mpf(a) + b;
+}
+
 sf::mpf sf::operator+(long a, const sf::mpf& b) {
+  return mpf(a) + b;
+}
+
+sf::mpf sf::operator+(unsigned long a, const sf::mpf& b) {
   return mpf(a) + b;
 }
 
@@ -337,7 +484,15 @@ sf::mpf sf::operator-(int a, const sf::mpf& b) {
   return mpf(a) - b;
 }
 
+sf::mpf sf::operator-(unsigned a, const sf::mpf& b) {
+  return mpf(a) - b;
+}
+
 sf::mpf sf::operator-(long a, const sf::mpf& b) {
+  return mpf(a) - b;
+}
+
+sf::mpf sf::operator-(unsigned long a, const sf::mpf& b) {
   return mpf(a) - b;
 }
 
@@ -345,7 +500,15 @@ sf::mpf sf::operator*(int a, const sf::mpf& b) {
   return mpf(a) * b;
 }
 
+sf::mpf sf::operator*(unsigned a, const sf::mpf& b) {
+  return mpf(a) * b;
+}
+
 sf::mpf sf::operator*(long a, const sf::mpf& b) {
+  return mpf(a) * b;
+}
+
+sf::mpf sf::operator*(unsigned long a, const sf::mpf& b) {
   return mpf(a) * b;
 }
 
@@ -353,7 +516,15 @@ sf::mpf sf::operator/(int a, const sf::mpf& b) {
   return mpf(a) / b;
 }
 
+sf::mpf sf::operator/(unsigned a, const sf::mpf& b) {
+  return mpf(a) / b;
+}
+
 sf::mpf sf::operator/(long a, const sf::mpf& b) {
+  return mpf(a) / b;
+}
+
+sf::mpf sf::operator/(unsigned long a, const sf::mpf& b) {
   return mpf(a) / b;
 }
 

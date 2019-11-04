@@ -103,11 +103,14 @@ GLuint LoadShaders(const std::string& vertex_file_path, const std::string& fragm
 
 int main(int argc, char** argv) {
   sf::init();
-  sf::spheroid sphere(1<<16);
+  auto radius = 1l << 16;
 
   auto lod = 0;
-  auto range_count = sf::geom::range_count_from_lod(lod);
-  auto vertex_array = sf::geom::vertices_from_lod(lod);
+  sf::geom geom(lod);
+  const auto verts = geom.get_verts();
+  const auto indices = geom.get_indices();
+  const auto index_counts = geom.get_index_counts();
+  sf::log::debug("index count %lu", indices.size());
 
   //spaceframe::window::create(720, 400, "spaceframe");
 
@@ -153,9 +156,9 @@ int main(int argc, char** argv) {
   auto curr_vertex = vertex_buffer_data.begin();
   for (int i = 0; i < 20; i++) {
     for (int j = 0; j < 3; j++) {
-      auto vertices = static_cast<std::array<GLfloat, 4>>(sf::vec4<sf::mpf>(sphere.tetras[i].orientation * sf::tetra::vertices[j] * sphere.r));
-      std::copy(vertices.begin(), vertices.end(), curr_vertex);
-      curr_vertex += vertices.size();
+      auto verts = static_cast<std::array<GLfloat, 4>>(sf::vec4<sf::mpf>(sf::spheroid::faces[i].orientation * sf::face::verts[j] * radius));
+      std::copy(verts.begin(), verts.end(), curr_vertex);
+      curr_vertex += verts.size();
     }
   }
   //glBindBuffer(GL_ARRAY_BUFFER, buffer_ids[0]);
@@ -172,6 +175,26 @@ int main(int argc, char** argv) {
 
     // ...input processing...
 
+    const auto rotation = sf::qtrn::from_axis_angle(
+      sf::vec3<sf::mpf>(0, 1, 0),
+      0//sf::mpf(-(double)std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count() / 2000)
+    );
+
+    const auto v = rotation * camera_position;
+    const auto p = sf::spheroid::face_pos_from_point(v);
+    const auto u = -rotation * p;
+
+    // if curr_pos != last_pos {
+    for (int i = 0; i < 20; i++) {
+      const auto vec = sf::spheroid::faces[i].vec_from_face_pos(p);
+      geom.sample(vec, [&](const sf::face::range_t& range, sf::face::coord_t len) {
+        return range[3] <= radius;
+      });
+      break;
+    }
+    // }
+
+
     auto now = std::chrono::steady_clock::now();
 
     if (std::chrono::duration_cast<std::chrono::milliseconds>(now - last_draw).count() >= redraw_target_milliseconds.count()) {
@@ -180,39 +203,28 @@ int main(int argc, char** argv) {
       //glClearColor(0.0f, 0.0f, 0.4f, 0.0f);
       //glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-      const auto rotation = sf::qtrn::from_axis_angle(
-        sf::vec3<sf::mpf>(0, 1, 0),
-        0//sf::mpf(-(double)std::chrono::duration_cast<std::chrono::milliseconds>(now - start).count() / 2000)
-      );
+      // auto curr_color = color_buffer_data.begin();
+      // for (int i = 0; i < 20; i++) {
+      //   if (sf::spheroid::faces[i].is_point_in_bounds(v)) {
+          //const auto vec = sf::spheroid::faces[i].vec_from_face_pos(p);
+          //sf::log::debug("face %d", i);
+          //sf::log::debug("%s", std::to_string(vec).c_str());
 
-      const auto v = rotation * camera_position;
-      const auto p = sf::spheroid::vertex_to_tetra_space(v);
-      const auto u = -rotation * p;
-
-      auto curr_color = color_buffer_data.begin();
-      for (int i = 0; i < 20; i++) {
-        if (sf::spheroid::tetras[i].is_vertex_in_bounds(v)) {
-          sf::log::debug("tetra %d", i);
-          const auto vec = sf::spheroid::tetras[i].vec_from_vertex(p);
-          sf::log::debug("%s", std::to_string(vec).c_str());
-          const auto range = sf::geom::viewable_range_from_vec(vec);
-          sf::log::debug("%s", std::to_string(range).c_str());
-
-          for (int j = 0; j < 3; j++) {
-            *curr_color++ = .3f;
-            *curr_color++ = .5f;
-            *curr_color++ = 1.f;
-            *curr_color++ = 1.f;
-          }
-        } else {
-          for (int j = 0; j < 3; j++) {
-            *curr_color++ = rgb[i % rgb.size()][0];
-            *curr_color++ = rgb[i % rgb.size()][1];
-            *curr_color++ = rgb[i % rgb.size()][2];
-            *curr_color++ = 1.f;
-          }
-        }
-      }
+        //   for (int j = 0; j < 3; j++) {
+        //     *curr_color++ = .3f;
+        //     *curr_color++ = .5f;
+        //     *curr_color++ = 1.f;
+        //     *curr_color++ = 1.f;
+        //   }
+        // } else {
+        //   for (int j = 0; j < 3; j++) {
+        //     *curr_color++ = rgb[i % rgb.size()][0];
+        //     *curr_color++ = rgb[i % rgb.size()][1];
+        //     *curr_color++ = rgb[i % rgb.size()][2];
+        //     *curr_color++ = 1.f;
+        //   }
+        // }
+      // }
       //glBindBuffer(GL_ARRAY_BUFFER, buffer_ids[1]);
       //glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * color_buffer_data.size(), &color_buffer_data[0], GL_STATIC_DRAW);
 

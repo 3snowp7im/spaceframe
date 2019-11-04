@@ -6,11 +6,13 @@
 
 namespace sf {
 
-  template <typename T=mpf>
+  template <typename T>
   class vec4 {
     std::array<T, 4> xyzw;
   public:
     static vec4<T> from_vertex_normal(const vec3<T>&, const vec3<T>&);
+    vec4();
+    vec4(const T&);
     vec4(const T&, const T&, const T&, const T&);
     vec4(const vec3<T>&, const T& = T(1));
     typename std::array<T, 4>::iterator begin();
@@ -21,25 +23,38 @@ namespace sf {
     T length() const;
     vec4<T> unit() const;
     void unitize();
+    vec4<T> operator-() const;
+    vec4<T> operator+(const vec4<T>&) const;
+    vec4<T> operator-(const vec4<T>&) const;
     T operator^(const vec4<T>&) const;
     operator vec3<T>() const;
     T& operator[](size_t n);
     const T& operator[](size_t n) const;
     template <typename U> operator vec4<U>() const;
     template <typename U> operator std::array<U, 4>() const;
-    template <typename U> vec4 operator+(const U&) const;
-    template <typename U> vec4 operator-(const U&) const;
-    template <typename U> vec4 operator*(const U&) const;
-    template <typename U> vec4 operator/(const U&) const;
-    template <typename U> vec4 operator+=(const U&);
-    template <typename U> vec4 operator-=(const U&);
-    template <typename U> vec4 operator*=(const U&);
-    template <typename U> vec4 operator/=(const U&);
+    template <typename U> vec4<T> operator+(const U&) const;
+    template <typename U> vec4<T> operator-(const U&) const;
+    template <typename U> vec4<T> operator*(const U&) const;
+    template <typename U> vec4<T> operator/(const U&) const;
+    template <typename U> vec4<T> operator+=(const U&);
+    template <typename U> vec4<T> operator-=(const U&);
+    template <typename U> vec4<T> operator*=(const U&);
+    template <typename U> vec4<T> operator/=(const U&);
   };
 
   template <typename T>
   inline vec4<T> vec4<T>::from_vertex_normal(const vec3<T>& v, const vec3<T>& n) {
     return sf::vec4<sf::mpf>(n, -(n ^ v));
+  }
+
+  template <typename T>
+  inline vec4<T>::vec4() :
+    xyzw({0, 0, 0, 0}) {
+  }
+
+  template <typename T>
+  inline vec4<T>::vec4(const T& v) :
+    xyzw({v, v, v, v}) {
   }
 
   template <typename T>
@@ -93,6 +108,21 @@ namespace sf {
   }
 
   template <typename T>
+  inline vec4<T> vec4<T>::operator-() const {
+    return vec4<T>(-xyzw[0], -xyzw[1], -xyzw[2], -xyzw[3]);
+  }
+
+  template <typename T>
+  inline vec4<T> vec4<T>::operator+(const vec4<T>& v) const {
+    return vec4<T>(xyzw[0] + v[0], xyzw[1] + v[1], xyzw[2] + v[2], xyzw[3] + v[3]);
+  }
+
+  template <typename T>
+  vec4<T> vec4<T>::operator-(const vec4<T>& v) const {
+    return vec4<T>(xyzw[0] - v[0], xyzw[1] - v[1], xyzw[2] - v[2], xyzw[3] - v[3]);
+  }
+
+  template <typename T>
   inline T vec4<T>::operator^(const vec4<T>& v) const {
     return xyzw[0] * v[0] + xyzw[1] * v[1] + xyzw[2] * v[2] + xyzw[3] * v[3];
   }
@@ -143,19 +173,19 @@ namespace sf {
   template <typename T>
   template <typename U>
   inline vec4<T> vec4<T>::operator-(const U& v) const {
-    return vec4(xyzw[0] - v, xyzw[1] - v, xyzw[2] - v, xyzw[3] - v);
+    return vec4<T>(xyzw[0] - v, xyzw[1] - v, xyzw[2] - v, xyzw[3] - v);
   }
 
   template <typename T>
   template <typename U>
   inline vec4<T> vec4<T>::operator*(const U& v) const {
-    return vec4(xyzw[0] * v, xyzw[1] * v, xyzw[2] * v, xyzw[3] * v);
+    return vec4<T>(xyzw[0] * v, xyzw[1] * v, xyzw[2] * v, xyzw[3] * v);
   }
 
   template <typename T>
   template <typename U>
   inline vec4<T> vec4<T>::operator/(const U& v) const {
-    return vec4(xyzw[0] / v, xyzw[1] / v, xyzw[2] / v, xyzw[3] / v);
+    return vec4<T>(xyzw[0] / v, xyzw[1] / v, xyzw[2] / v, xyzw[3] / v);
   }
 
   template <typename T>

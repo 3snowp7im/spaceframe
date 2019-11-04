@@ -38,14 +38,13 @@ namespace sf {
   }
 
   template <typename T>
-  inline mat4<T>::mat4(const vec4<T>& a, const vec4<T>& b, const vec4<T>& c, const vec4<T>& d)
-    : m({
-        a[0], b[0], c[0], d[0],
-        a[1], b[1], c[1], d[1],
-        a[2], b[2], c[2], d[2],
-        a[3], b[3], c[3], d[3]
-      })
-  {
+  inline mat4<T>::mat4(const vec4<T>& a, const vec4<T>& b, const vec4<T>& c, const vec4<T>& d) :
+    m({
+      a[0], b[0], c[0], d[0],
+      a[1], b[1], c[1], d[1],
+      a[2], b[2], c[2], d[2],
+      a[3], b[3], c[3], d[3]
+    }) {
   }
 
   template <typename T>
@@ -54,8 +53,8 @@ namespace sf {
     const T& e, const T& f, const T& g, const T& h,
     const T& i, const T& j, const T& k, const T& l,
     const T& m, const T& n, const T& o, const T& p
-  ) : m({a, e, i, m, b, f, j, n, c, g, k, o, d, h, l, p})
-  {
+  ) :
+    m({a, e, i, m, b, f, j, n, c, g, k, o, d, h, l, p}) {
   }
 
   template <typename T>
