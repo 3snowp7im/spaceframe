@@ -1,7 +1,7 @@
 #include <cstdarg>
 #include <vector>
 #include <spdlog/spdlog.h>
-#include "../sf/log.h"
+#include <sf/log.h>
 
 class log_wrapper {
 public:

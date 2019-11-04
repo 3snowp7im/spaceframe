@@ -2,7 +2,7 @@
 #include <iterator>
 #include <cmath>
 #include <stdexcept>
-#include "geom.h"
+#include <sf/geom.h>
 
 const static sf::face::ucoord_t visible_range_len = 2 * sf::face::coord_max;
 const static unsigned visible_range_log = std::log2(visible_range_len);
@@ -58,8 +58,9 @@ static std::vector<std::vector<unsigned>> indices_from_lod(unsigned lod) {
 sf::geom::shape::shape() {
 }
 
-sf::geom::shape::shape(bool filled) :
-  filled(filled) {
+sf::geom::shape::shape(bool filled, bool in_bounds) :
+  filled(filled),
+  in_bounds(in_bounds) {
 }
 
 sf::geom::shape::shape(size_t index) :
@@ -88,24 +89,31 @@ static bool should_split(const sf::face::range_t& range, int lod, int depth) {
 }
 
 static bool is_in_bounds(const sf::face::range_t& range, sf::face::ucoord_t len) {
-  return len <= sf::face::coord_max
-    && ((range[0] >= 0 && range[0] <= sf::face::coord_max) || (range[0] + len >= 0 && range[0] + len <= sf::face::coord_max))
-    && ((range[1] >= 0 && range[1] <= sf::face::coord_max) || (range[1] + len >= 0 && range[1] + len <= sf::face::coord_max))
-    && ((range[2] >= 0 && range[2] <= sf::face::coord_max) || (range[2] + len >= 0 && range[2] + len <= sf::face::coord_max))
-    && ((range[3] >= 0 && range[3] <= sf::face::coord_max) || (range[3] + len >= 0 && range[3] + len <= sf::face::coord_max));
+  return ((range[0] >= 0 && range[0] <= sf::face::coord_max) || (range[0] + len >= 0 && range[0] + len <= sf::face::coord_max) || (range[0] <= 0 && range[0] + len >= sf::face::coord_max))
+    && ((range[1] >= 0 && range[1] <= sf::face::coord_max) || (range[1] + len >= 0 && range[1] + len <= sf::face::coord_max) || (range[1] <= 0 && range[1] + len >= sf::face::coord_max))
+    && ((range[2] >= 0 && range[2] <= sf::face::coord_max) || (range[2] + len >= 0 && range[2] + len <= sf::face::coord_max) || (range[2] <= 0 && range[2] + len >= sf::face::coord_max))
+    && ((range[3] >= 0 && range[3] <= sf::face::coord_max) || (range[3] + len >= 0 && range[3] + len <= sf::face::coord_max) || (range[3] <= 0 && range[3] + len >= sf::face::coord_max));
 }
 
-const sf::geom::tet_in* sf::geom::tet_in::placeholder(bool filled) {
-  static const tet_in tin_filled(true);
-  static const tet_in tin_empty(false);
+const sf::geom::tet_in* sf::geom::tet_in::placeholder(bool filled, bool in_bounds) {
+  static const tet_in tet_filled_in_bounds(true, true);
+  static const tet_in tet_filled_out_of_bounds(true, false);
+  static const tet_in tet_empty_in_bounds(false, true);
+  static const tet_in tet_empty_out_of_bounds(false, false);
   if (filled) {
-    return &tin_filled;
+    if (in_bounds) {
+      return &tet_filled_in_bounds;
+    }
+    return &tet_filled_out_of_bounds;
   }
-  return &tin_empty;
+  if (in_bounds) {
+    return &tet_empty_in_bounds;
+  }
+  return &tet_empty_out_of_bounds;
 }
 
-sf::geom::tet_in::tet_in(bool filled) :
-  shape(filled) {
+sf::geom::tet_in::tet_in(bool filled, bool in_bounds) :
+  shape(filled, in_bounds) {
 }
 
 sf::geom::tet_in::tet_in(const verts_map_t& verts_map, unsigned lod, const face::range_t& range, unsigned depth) :
@@ -216,17 +224,25 @@ void sf::geom::tet_in::map(std::vector<std::vector<unsigned>::iterator>& indices
   }
 }
 
-const sf::geom::tet_out* sf::geom::tet_out::placeholder(bool filled) {
-  static const tet_out tout_filled(true);
-  static const tet_out tout_empty(false);
+const sf::geom::tet_out* sf::geom::tet_out::placeholder(bool filled, bool in_bounds) {
+  static const tet_out tet_filled_in_bounds(true, true);
+  static const tet_out tet_filled_out_of_bounds(true, false);
+  static const tet_out tet_empty_in_bounds(false, true);
+  static const tet_out tet_empty_out_of_bounds(false, false);
   if (filled) {
-    return &tout_filled;
+    if (in_bounds) {
+      return &tet_filled_in_bounds;
+    }
+    return &tet_filled_out_of_bounds;
   }
-  return &tout_empty;
+  if (in_bounds) {
+    return &tet_empty_in_bounds;
+  }
+  return &tet_empty_out_of_bounds;
 }
 
-sf::geom::tet_out::tet_out(bool filled) :
-  shape(filled) {
+sf::geom::tet_out::tet_out(bool filled, bool in_bounds) :
+  shape(filled, in_bounds) {
 }
 
 sf::geom::tet_out::tet_out(const verts_map_t& verts_map, unsigned lod, const face::range_t& range, unsigned depth) :
@@ -321,17 +337,25 @@ void sf::geom::tet_out::map(std::vector<std::vector<unsigned>::iterator>& indice
   }
 }
 
-const sf::geom::oct* sf::geom::oct::placeholder(bool filled) {
-  static const oct oct_filled(true);
-  static const oct oct_empty(false);
+const sf::geom::oct* sf::geom::oct::placeholder(bool filled, bool in_bounds) {
+  static const oct oct_filled_in_bounds(true, true);
+  static const oct oct_filled_out_of_bounds(true, false);
+  static const oct oct_empty_in_bounds(false, true);
+  static const oct oct_empty_out_of_bounds(false, false);
   if (filled) {
-    return &oct_filled;
+    if (in_bounds) {
+      return &oct_filled_in_bounds;
+    }
+    return &oct_filled_out_of_bounds;
   }
-  return &oct_empty;
+  if (in_bounds) {
+    return &oct_empty_in_bounds;
+  }
+  return &oct_empty_out_of_bounds;
 }
 
-sf::geom::oct::oct(bool filled) :
-  shape(filled) {
+sf::geom::oct::oct(bool filled, bool in_bounds) :
+  shape(filled, in_bounds) {
 }
 
 sf::geom::oct::oct(const verts_map_t& verts_map, unsigned lod, const face::range_t& range, unsigned depth) :
@@ -524,340 +548,79 @@ void sf::geom::oct::sample(const face::range_t& range, face::ucoord_t len, std::
   }
 }
 
-void sf::geom::oct::map_a(std::vector<std::vector<unsigned>::iterator>& indices, const tet_in* tet) const {
+template <typename M, typename T, typename U, size_t a, size_t b, size_t c, size_t d, size_t e, size_t f, size_t g, size_t x>
+void sf::geom::oct::map(std::vector<std::vector<unsigned>::iterator>& indices, const T* tet) const {
   if (filled || tet->filled) {
     std::array<const oct*, 3> o;
-    std::array<const tet_in*, 3> tin;
-    const tet_out* tout;
+    std::array<const T*, 3> t;
+    const U* u;
     if (field.size() || tet->field.size()) {
       if (filled && field.size()) {
-        o[0] = dynamic_cast<oct*>(field[3].get());
-        o[1] = dynamic_cast<oct*>(field[4].get());
-        o[2] = dynamic_cast<oct*>(field[5].get());
-        tout = dynamic_cast<tet_out*>(field[13].get());
+        o[0] = dynamic_cast<oct*>(field[a].get());
+        o[1] = dynamic_cast<oct*>(field[b].get());
+        o[2] = dynamic_cast<oct*>(field[c].get());
+        u = dynamic_cast<U*>(field[d].get());
       } else {
-        std::fill(o.begin(), o.end(), oct::placeholder(filled));
-        tout = tet_out::placeholder(filled);
+        std::fill(o.begin(), o.end(), oct::placeholder(filled, in_bounds));
+        u = U::placeholder(filled, in_bounds);
       }
       if (tet->filled && tet->field.size()) {
-        tin[0] = dynamic_cast<tet_in*>(tet->field[1].get());
-        tin[1] = dynamic_cast<tet_in*>(tet->field[2].get());
-        tin[2] = dynamic_cast<tet_in*>(tet->field[3].get());
+        t[0] = dynamic_cast<T*>(tet->field[e].get());
+        t[1] = dynamic_cast<T*>(tet->field[f].get());
+        t[2] = dynamic_cast<T*>(tet->field[g].get());
         o[3] = dynamic_cast<oct*>(tet->field[0].get());
       } else {
-        std::fill(tin.begin(), tin.end(), tet_in::placeholder(tet->filled));
-        o[3] = oct::placeholder(tet->filled);
+        std::fill(t.begin(), t.end(), T::placeholder(tet->filled, tet->in_bounds));
+        o[3] = oct::placeholder(tet->filled, tet->in_bounds);
       }
-      o[0]->map_a(indices, tin[0]);
-      o[1]->map_a(indices, tin[1]);
-      o[2]->map_a(indices, tin[2]);
-      o[3]->map_a(indices, tout);
-    } else if ((in_bounds && filled && !tet->filled) || (!filled && tet->in_bounds && tet->filled)) {
+      M::map(indices, o[0], t[0]);
+      M::map(indices, o[1], t[1]);
+      M::map(indices, o[2], t[2]);
+      M::map(indices, o[3], u);
+    } else if (in_bounds && tet->in_bounds && ((filled && !tet->filled) || (!filled && tet->filled))) {
       if (faces.size()) {
-        std::copy(faces[0].begin(), faces[0].end(), indices[index]);
+        std::copy(faces[x].begin(), faces[x].end(), indices[index]);
         indices[index] += 3;
       } else if (tet->faces.size()) {
-        std::copy(tet->faces[0].begin(), tet->faces[0].end(), indices[tet->index]);
+        std::copy(tet->faces[x / 2].begin(), tet->faces[x / 2].end(), indices[tet->index]);
         indices[tet->index] += 3;
       } else {
         throw std::runtime_error("Attempted to map shapes without face data");
       }
     }
   }
+}
+
+void sf::geom::oct::map_a(std::vector<std::vector<unsigned>::iterator>& indices, const tet_in* tet) const {
+  map<mapper_a, tet_in, tet_out, 3, 4, 5, 13, 1, 2, 3, 0>(indices, tet);
 }
 
 void sf::geom::oct::map_a(std::vector<std::vector<unsigned>::iterator>& indices, const tet_out* tet) const {
-  if (filled || tet->filled) {
-    std::array<const oct*, 3> o;
-    std::array<const tet_out*, 3> tout;
-    const tet_in* tin;
-    if (field.size() || tet->field.size()) {
-      if (filled && field.size()) {
-        o[0] = dynamic_cast<oct*>(field[0].get());
-        o[1] = dynamic_cast<oct*>(field[1].get());
-        o[2] = dynamic_cast<oct*>(field[2].get());
-        tin = dynamic_cast<tet_in*>(field[7].get());
-      } else {
-        std::fill(o.begin(), o.end(), oct::placeholder(filled));
-        tin = tet_in::placeholder(filled);
-      }
-      if (tet->filled && tet->field.size()) {
-        tout[0] = dynamic_cast<tet_out*>(tet->field[2].get());
-        tout[1] = dynamic_cast<tet_out*>(tet->field[3].get());
-        tout[2] = dynamic_cast<tet_out*>(tet->field[4].get());
-        o[3] = dynamic_cast<oct*>(tet->field[0].get());
-      } else {
-        std::fill(tout.begin(), tout.end(), tet_out::placeholder(tet->filled));
-        o[3] = oct::placeholder(tet->filled);
-      }
-      o[0]->map_a(indices, tout[0]);
-      o[1]->map_a(indices, tout[1]);
-      o[2]->map_a(indices, tout[2]);
-      o[3]->map_a(indices, tin);
-    } else if ((in_bounds && filled && !tet->filled) || (!filled && tet->in_bounds && tet->filled)) {
-      if (faces.size()) {
-        std::copy(faces[1].begin(), faces[1].end(), indices[index]);
-        indices[index] += 3;
-      } else if (tet->faces.size()) {
-        std::copy(tet->faces[0].begin(), tet->faces[0].end(), indices[tet->index]);
-        indices[tet->index] += 3;
-      } else {
-        throw std::runtime_error("Attempted to map shapes without face data");
-      }
-    }
-  }
+  map<mapper_a, tet_out, tet_in, 0, 1, 2, 6, 2, 3, 4, 1>(indices, tet);
 }
 
 void sf::geom::oct::map_b(std::vector<std::vector<unsigned>::iterator>& indices, const tet_in* tet) const {
-  if (filled || tet->filled) {
-    std::array<const oct*, 3> o;
-    std::array<const tet_in*, 3> tin;
-    const tet_out* tout;
-    if (field.size() || tet->field.size()) {
-      if (filled && field.size()) {
-        o[0] = dynamic_cast<oct*>(field[1].get());
-        o[1] = dynamic_cast<oct*>(field[2].get());
-        o[2] = dynamic_cast<oct*>(field[5].get());
-        tout = dynamic_cast<tet_out*>(field[12].get());
-      } else {
-        std::fill(o.begin(), o.end(), oct::placeholder(filled));
-        tout = tet_out::placeholder(filled);
-      }
-      if (tet->filled && tet->field.size()) {
-        tin[0] = dynamic_cast<tet_in*>(tet->field[1].get());
-        tin[1] = dynamic_cast<tet_in*>(tet->field[2].get());
-        tin[2] = dynamic_cast<tet_in*>(tet->field[4].get());
-        o[3] = dynamic_cast<oct*>(tet->field[0].get());
-      } else {
-        std::fill(tin.begin(), tin.end(), tet_in::placeholder(tet->filled));
-        o[3] = oct::placeholder(tet->filled);
-      }
-      o[0]->map_b(indices, tin[0]);
-      o[1]->map_b(indices, tin[1]);
-      o[2]->map_b(indices, tin[2]);
-      o[3]->map_b(indices, tout);
-    } else if ((filled && in_bounds && !tet->filled) || (!filled && tet->in_bounds && tet->filled)) {
-      if (faces.size()) {
-        std::copy(faces[2].begin(), faces[2].end(), indices[index]);
-        indices[index] += 3;
-      } else if (tet->faces.size()) {
-        std::copy(tet->faces[1].begin(), tet->faces[1].end(), indices[tet->index]);
-        indices[tet->index] += 3;
-      } else {
-        throw std::runtime_error("Attempted to map shapes without face data");
-      }
-    }
-  }
+  map<mapper_b, tet_in, tet_out, 1, 2, 5, 12, 1, 2, 4, 2>(indices, tet);
 }
 
 void sf::geom::oct::map_b(std::vector<std::vector<unsigned>::iterator>& indices, const tet_out* tet) const {
-  if (filled || tet->filled) {
-    std::array<const oct*, 3> o;
-    std::array<const tet_out*, 3> tout;
-    const tet_in* tin;
-    if (field.size() || tet->field.size()) {
-      if (filled && field.size()) {
-        o[0] = dynamic_cast<oct*>(field[0].get());
-        o[1] = dynamic_cast<oct*>(field[3].get());
-        o[2] = dynamic_cast<oct*>(field[4].get());
-        tin = dynamic_cast<tet_in*>(field[7].get());
-      } else {
-        std::fill(o.begin(), o.end(), oct::placeholder(filled));
-        tin = tet_in::placeholder(filled);
-      }
-      if (tet->filled && tet->field.size()) {
-        tout[0] = dynamic_cast<tet_out*>(tet->field[1].get());
-        tout[1] = dynamic_cast<tet_out*>(tet->field[3].get());
-        tout[2] = dynamic_cast<tet_out*>(tet->field[4].get());
-        o[3] = dynamic_cast<oct*>(tet->field[0].get());
-      } else {
-        std::fill(tout.begin(), tout.end(), tet_out::placeholder(tet->filled));
-        o[3] = oct::placeholder(tet->filled);
-      }
-      o[0]->map_b(indices, tout[0]);
-      o[1]->map_b(indices, tout[1]);
-      o[2]->map_b(indices, tout[2]);
-      o[3]->map_b(indices, tin);
-    } else if ((filled && in_bounds && !tet->filled) || (!filled && tet->in_bounds && tet->filled)) {
-      if (faces.size()) {
-        std::copy(faces[3].begin(), faces[3].end(), indices[index]);
-        indices[index] += 3;
-      } else if (tet->faces.size()) {
-        std::copy(tet->faces[1].begin(), tet->faces[1].end(), indices[tet->index]);
-        indices[tet->index] += 3;
-      } else {
-        throw std::runtime_error("Attempted to map shapes without face data");
-      }
-    }
-  }
+  map<mapper_b, tet_out, tet_in, 0, 3, 4, 7, 1, 3, 4, 3>(indices, tet);
 }
 
 void sf::geom::oct::map_c(std::vector<std::vector<unsigned>::iterator>& indices, const tet_in* tet) const {
-  if (filled || tet->filled) {
-    std::array<const oct*, 3> o;
-    std::array<const tet_in*, 3> tin;
-    const tet_out* tout;
-    if (field.size() || tet->field.size()) {
-      if (filled && field.size()) {
-        o[0] = dynamic_cast<oct*>(field[0].get());
-        o[1] = dynamic_cast<oct*>(field[2].get());
-        o[2] = dynamic_cast<oct*>(field[4].get());
-        tout = dynamic_cast<tet_out*>(field[11].get());
-      } else {
-        std::fill(o.begin(), o.end(), oct::placeholder(filled));
-        tout = tet_out::placeholder(filled);
-      }
-      if (tet->filled && tet->field.size()) {
-        tin[0] = dynamic_cast<tet_in*>(tet->field[1].get());
-        tin[1] = dynamic_cast<tet_in*>(tet->field[3].get());
-        tin[2] = dynamic_cast<tet_in*>(tet->field[4].get());
-        o[3] = dynamic_cast<oct*>(tet->field[0].get());
-      } else {
-        std::fill(tin.begin(), tin.end(), tet_in::placeholder(tet->filled));
-        o[3] = oct::placeholder(tet->filled);
-      }
-      o[0]->map_c(indices, tin[0]);
-      o[1]->map_c(indices, tin[1]);
-      o[2]->map_c(indices, tin[2]);
-      o[3]->map_c(indices, tout);
-    } else if ((in_bounds && filled && !tet->filled) || (!filled && tet->in_bounds && tet->filled)) {
-      if (faces.size()) {
-        std::copy(faces[4].begin(), faces[4].end(), indices[index]);
-        indices[index] += 3;
-      } else if (tet->faces.size()) {
-        std::copy(tet->faces[2].begin(), tet->faces[2].end(), indices[tet->index]);
-        indices[tet->index] += 3;
-      } else {
-        throw std::runtime_error("Attempted to map shapes without face data");
-      }
-    }
-  }
+  map<mapper_c, tet_in, tet_out, 0, 2, 4, 11, 1, 3, 4, 4>(indices, tet);
 }
 
 void sf::geom::oct::map_c(std::vector<std::vector<unsigned>::iterator>& indices, const tet_out* tet) const {
-  if (filled || tet->filled) {
-    std::array<const oct*, 3> o;
-    std::array<const tet_out*, 3> tout;
-    const tet_in* tin;
-    if (field.size() || tet->field.size()) {
-      if (filled && field.size()) {
-        o[0] = dynamic_cast<oct*>(field[1].get());
-        o[1] = dynamic_cast<oct*>(field[3].get());
-        o[2] = dynamic_cast<oct*>(field[5].get());
-        tin = dynamic_cast<tet_in*>(field[8].get());
-      } else {
-        std::fill(o.begin(), o.end(), oct::placeholder(filled));
-        tin = tet_in::placeholder(filled);
-      }
-      if (tet->filled && tet->field.size()) {
-        tout[0] = dynamic_cast<tet_out*>(tet->field[1].get());
-        tout[1] = dynamic_cast<tet_out*>(tet->field[2].get());
-        tout[2] = dynamic_cast<tet_out*>(tet->field[4].get());
-        o[3] = dynamic_cast<oct*>(tet->field[0].get());
-      } else {
-        std::fill(tout.begin(), tout.end(), tet_out::placeholder(tet->filled));
-        o[3] = oct::placeholder(tet->filled);
-      }
-      o[0]->map_c(indices, tout[0]);
-      o[1]->map_c(indices, tout[1]);
-      o[2]->map_c(indices, tout[2]);
-      o[3]->map_c(indices, tin);
-    } else if ((in_bounds && filled && !tet->filled) || (!filled && tet->in_bounds && tet->filled)) {
-      if (faces.size()) {
-        std::copy(faces[5].begin(), faces[5].end(), indices[index]);
-        indices[index] += 3;
-      } else if (tet->faces.size()) {
-        std::copy(tet->faces[2].begin(), tet->faces[2].end(), indices[tet->index]);
-        indices[tet->index] += 3;
-      } else {
-        throw std::runtime_error("Attempted to map shapes without face data");
-      }
-    }
-  }
+  map<mapper_c, tet_out, tet_in, 1, 3, 5, 8, 1, 2, 4, 5>(indices, tet);
 }
 
 void sf::geom::oct::map_d(std::vector<std::vector<unsigned>::iterator>& indices, const tet_in* tet) const {
-  if (filled || tet->filled) {
-    std::array<const oct*, 3> o;
-    std::array<const tet_in*, 3> tin;
-    const tet_out* tout;
-    if (field.size() || tet->field.size()) {
-      if (filled && field.size()) {
-        o[0] = dynamic_cast<oct*>(field[0].get());
-        o[1] = dynamic_cast<oct*>(field[1].get());
-        o[2] = dynamic_cast<oct*>(field[3].get());
-        tout = dynamic_cast<tet_out*>(field[10].get());
-      } else {
-        std::fill(o.begin(), o.end(), oct::placeholder(filled));
-        tout = tet_out::placeholder(filled);
-      }
-      if (tet->filled && tet->field.size()) {
-        tin[0] = dynamic_cast<tet_in*>(tet->field[1].get());
-        tin[1] = dynamic_cast<tet_in*>(tet->field[3].get());
-        tin[2] = dynamic_cast<tet_in*>(tet->field[4].get());
-        o[3] = dynamic_cast<oct*>(tet->field[0].get());
-      } else {
-        std::fill(tin.begin(), tin.end(), tet_in::placeholder(tet->filled));
-        o[3] = oct::placeholder(tet->filled);
-      }
-      o[0]->map_d(indices, tin[0]);
-      o[1]->map_d(indices, tin[1]);
-      o[2]->map_d(indices, tin[2]);
-      o[3]->map_d(indices, tout);
-    } else if ((in_bounds && filled && !tet->filled) || (!filled && tet->in_bounds && tet->filled)) {
-      if (faces.size()) {
-        std::copy(faces[6].begin(), faces[6].end(), indices[index]);
-        indices[index] += 3;
-      } else if (tet->faces.size()) {
-        std::copy(tet->faces[3].begin(), tet->faces[3].end(), indices[tet->index]);
-        indices[tet->index] += 3;
-      } else {
-        throw std::runtime_error("Attempted to map shapes without face data");
-      }
-    }
-  }
+  map<mapper_d, tet_in, tet_out, 0, 1, 3, 10, 1, 3, 4, 6>(indices, tet);
 }
 
 void sf::geom::oct::map_d(std::vector<std::vector<unsigned>::iterator>& indices, const tet_out* tet) const {
-  if (filled || tet->filled) {
-    std::array<const oct*, 3> o;
-    std::array<const tet_out*, 3> tout;
-    const tet_in* tin;
-    if (field.size() || tet->field.size()) {
-      if (filled && field.size()) {
-        o[0] = dynamic_cast<oct*>(field[2].get());
-        o[1] = dynamic_cast<oct*>(field[4].get());
-        o[2] = dynamic_cast<oct*>(field[5].get());
-        tin = dynamic_cast<tet_in*>(field[9].get());
-      } else {
-        std::fill(o.begin(), o.end(), oct::placeholder(filled));
-        tin = tet_in::placeholder(filled);
-      }
-      if (tet->filled && tet->field.size()) {
-        tout[0] = dynamic_cast<tet_out*>(tet->field[1].get());
-        tout[1] = dynamic_cast<tet_out*>(tet->field[2].get());
-        tout[2] = dynamic_cast<tet_out*>(tet->field[3].get());
-        o[3] = dynamic_cast<oct*>(tet->field[0].get());
-      } else {
-        std::fill(tout.begin(), tout.end(), tet_out::placeholder(tet->filled));
-        o[3] = oct::placeholder(tet->filled);
-      }
-      o[0]->map_d(indices, tout[0]);
-      o[1]->map_d(indices, tout[1]);
-      o[2]->map_d(indices, tout[2]);
-      o[3]->map_d(indices, tin);
-    } else if ((in_bounds && filled && !tet->filled) || (!filled && tet->in_bounds && tet->filled)) {
-      if (faces.size()) {
-        std::copy(faces[7].begin(), faces[7].end(), indices[index]);
-        indices[index] += 3;
-      } else if (tet->faces.size()) {
-        std::copy(tet->faces[3].begin(), tet->faces[3].end(), indices[tet->index]);
-        indices[tet->index] += 3;
-      } else {
-        throw std::runtime_error("Attempted to map shapes without face data");
-      }
-    }
-  }
+  map<mapper_d, tet_out, tet_in, 2, 4, 5, 9, 1, 2, 3, 7>(indices, tet);
 }
 
 void sf::geom::oct::map(std::vector<std::vector<unsigned>::iterator>& indices) const {

@@ -1,10 +1,10 @@
 #pragma once
 
 #include <array>
+#include <sf/face.h>
+#include <sf/mpf.h>
 #include <sf/sf.h>
-#include "mpf.h"
-#include "face.h"
-#include "vec3.h"
+#include <sf/vec3.h>
 
 namespace sf {
 

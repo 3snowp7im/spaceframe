@@ -1,5 +1,5 @@
 #include <mpreal.h>
-#include "../sf/mpf.h"
+#include <sf/mpf.h>
 
 void sf::mpf::init() {
   mpfr::mpreal::set_default_prec(128);

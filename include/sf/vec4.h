@@ -2,7 +2,7 @@
 
 #include <array>
 #include <string>
-#include "vec3.h"
+#include <sf/vec3.h>
 
 namespace sf {
 

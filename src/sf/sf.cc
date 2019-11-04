@@ -1,7 +1,7 @@
+#include <sf/face.h>
+#include <sf/mpf.h>
+#include <sf/spheroid.h>
 #include <sf/sf.h>
-#include "face.h"
-#include "mpf.h"
-#include "spheroid.h"
 
 void sf::init() {
   mpf::init();

@@ -1,7 +1,7 @@
 #pragma once
 
-#include "mpf.h"
-#include "vec3.h"
+#include <sf/mpf.h>
+#include <sf/vec3.h>
 
 namespace sf {
 

@@ -1,4 +1,4 @@
-#include "qtrn.h"
+#include <sf/qtrn.h>
 
 sf::qtrn sf::qtrn::from_axis_angle(const vec3<mpf>& v, const mpf& a) {
   const auto s = mpf::sin(a / 2);

@@ -1,7 +1,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <stdexcept>
-#include "../sf/log.h"
+#include <sf/log.h>
 #include "../spaceframe/window.h"
 
 void spaceframe::window::create(unsigned width, unsigned height, const std::string& title) {

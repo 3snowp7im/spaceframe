@@ -1,4 +1,4 @@
-#include "spheroid.h"
+#include <sf/spheroid.h>
 
 std::array<sf::face, 20> sf::spheroid::face_array;
 

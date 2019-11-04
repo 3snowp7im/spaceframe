@@ -1,6 +1,6 @@
 #include <gmpxx.h>
-#include "../sf/mpf.h"
-#include "../sf/mpz.h"
+#include <sf/mpf.h>
+#include <sf/mpz.h>
 
 sf::mpz::mpz(void* v) :
   impl(std::shared_ptr<void>(static_cast<mpz_class*>(v))) {

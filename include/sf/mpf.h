@@ -2,7 +2,7 @@
 
 #include <memory>
 #include <string>
-#include "mpz.h"
+#include <sf/mpz.h>
 
 namespace sf {
 

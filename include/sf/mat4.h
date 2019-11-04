@@ -1,9 +1,9 @@
 #pragma once
 
 #include <array>
-#include "qtrn.h"
-#include "vec3.h"
-#include "vec4.h"
+#include <sf/qtrn.h>
+#include <sf/vec3.h>
+#include <sf/vec4.h>
 
 namespace sf {
 

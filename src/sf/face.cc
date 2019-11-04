@@ -1,4 +1,4 @@
-#include "face.h"
+#include <sf/face.h>
 
 const sf::face::coord_t sf::face::coord_max = static_cast<long>((~0lu >> 3) + 1);
 
