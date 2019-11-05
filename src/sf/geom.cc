@@ -616,7 +616,7 @@ void sf::geom::oct::map_c(std::vector<std::vector<unsigned>::iterator>& indices,
 }
 
 void sf::geom::oct::map_d(std::vector<std::vector<unsigned>::iterator>& indices, const tet_in* tet) const {
-  map<mapper_d, tet_in, tet_out, 0, 1, 3, 10, 1, 3, 4, 6>(indices, tet);
+  map<mapper_d, tet_in, tet_out, 0, 1, 3, 10, 2, 3, 4, 6>(indices, tet);
 }
 
 void sf::geom::oct::map_d(std::vector<std::vector<unsigned>::iterator>& indices, const tet_out* tet) const {
@@ -692,7 +692,6 @@ void sf::geom::sample(const face::vec_t& v, std::function<bool(const face::range
   auto curr_index = indices.begin();
   auto curr_count = index_counts.begin();
   for (const auto& iter : iters) {
-    printf("%lu\n", std::distance(curr_index->begin(), iter));
     *curr_count++ = std::distance((curr_index++)->begin(), iter);
   }
 }
