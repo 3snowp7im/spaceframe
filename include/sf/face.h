@@ -22,7 +22,7 @@ namespace sf {
     typedef unsigned long ucoord_t;
     typedef vec4<coord_t> range_t;
     typedef vec4<mpf> vec_t;
-    const static coord_t coord_max;
+    constexpr static coord_t coord_max = static_cast<long>((~0lu >> 3) + 1);
     constexpr static vert_access verts = vert_access();
     face();
     face(const qtrn&);

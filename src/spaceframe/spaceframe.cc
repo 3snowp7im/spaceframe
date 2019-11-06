@@ -10,45 +10,47 @@
 #include <sf/sf.h>
 #include <sf/spheroid.h>
 #include "shader.h"
+#include "frag.glsl.h"
+#include "vert.glsl.h"
 #include "window.h"
+
+using namespace spaceframe;
+
+using geom = sf::geom<GLfloat, 3>;
 
 int main(int argc, char** argv) {
   sf::init();
   auto radius = 1l << 16;
 
   auto lod = 0;
-  sf::geom geom(lod);
-  const auto verts = geom.get_verts();
-  const auto indices = geom.get_indices();
-  const auto index_counts = geom.get_index_counts();
-  sf::log::debug("index count %lu", indices.size());
+  geom geo(lod);
+  const auto verts = geo.get_verts();
+  const auto indices = geo.get_indices();
+  const auto index_counts = geo.get_index_counts();
 
-  //spaceframe::window::create(720, 400, "spaceframe");
+  //window::create(720, 400, "spaceframe");
 
   //glEnable(GL_DEPTH_TEST);
   //glDepthFunc(GL_LESS);
 
   // Create and compile our GLSL program from the shaders
-  //GLuint programID = LoadShaders("src/spaceframe/vert.glsl", "src/spaceframe/frag.glsl");
+  //GLuint program_id = load_shaders(std::string(vert_glsl), std::string(frag_glsl));
 
-  //GLuint MatrixID = glGetUniformLocation(programID, "MVP");
+  //GLuint mvp_id = glGetUniformLocation(program_id, "mvp");
 
-  //const sf::vec3<sf::mpf> camera_position = {0, 0, (sf::mpf(1) << 17) + (sf::mpf(1) << 16)};
-
-  sf::mpf camera_z = {1};
+  sf::mpf camera_z(radius + 2);
   if (argc > 1) {
     camera_z = sf::mpf(std::string(argv[1]));
   }
   const sf::vec3<sf::mpf> camera_position = {0, 0, camera_z};
-  sf::log::debug("camera %s", std::to_string(camera_position).c_str());
   const auto camera_translation = sf::mat4<sf::mpf>::translate(-camera_position);
   const auto camera_projection = sf::mat4<sf::mpf>::project(60 * sf::mpf::pi() / 180, sf::mpf(16) / 9, sf::mpf(1), sf::mpf(1) << 22);
 
-  GLuint vertex_array_id;
+  //GLuint vertex_array_id;
   //glGenVertexArrays(1, &vertex_array_id);
   //glBindVertexArray(vertex_array_id);
 
-  std::array<GLuint, 2> buffer_ids;
+  //std::array<GLuint, 2> buffer_ids;
   //glGenBuffers(buffer_ids.size(), &buffer_ids[0]);
 
   std::array<std::array<GLfloat, 3>, 8> rgb = {{
@@ -81,8 +83,8 @@ int main(int argc, char** argv) {
 
   auto start = std::chrono::steady_clock::now();
 
-  while (/*!spaceframe::window::should_close()*/1) {
-    //spaceframe::window::poll_events();
+  while (/*!window::should_close()*/1) {
+    //window::poll_events();
 
     // ...input processing...
 
@@ -98,13 +100,19 @@ int main(int argc, char** argv) {
     // if curr_pos != last_pos {
     for (int i = 0; i < 20; i++) {
       const auto vec = sf::spheroid::faces[i].vec_from_face_pos(p);
-      geom.sample(vec, [&](const sf::face::range_t& range, sf::face::coord_t len) {
+      geo.sample(vec, [&](const sf::face::range_t& range, sf::face::coord_t) {
         return range[3] <= radius;
+      }, [](const sf::face::range_t&, sf::face::coord_t, typename geom::shape_t shape) {
+        switch (shape) {
+        case geom::shape_t::oct:
+          return std::array<GLfloat, 3>({1.f, .7f, .7f});
+        default:
+          return std::array<GLfloat, 3>({.7f, .7f, 1.f});
+        }
       });
       break;
     }
     // }
-
 
     auto now = std::chrono::steady_clock::now();
 
@@ -159,7 +167,7 @@ int main(int argc, char** argv) {
       return 0;
     }
 
-    //spaceframe::window::swap_buffers();
+    //window::swap_buffers();
   }
   return 0;
 }

@@ -1,15 +1,13 @@
 #version 330 core
 
-layout(location = 0) in vec4 vertexPosition;
-layout(location = 1) in vec4 vertexColor;
+layout(location = 0) in vec4 vert_pos;
+layout(location = 1) in vec4 vert_color;
 
-out vec4 fragmentColor;
+out vec4 frag_color;
 
-// Values that stay constant for the whole mesh.
-uniform mat4 MVP;
+uniform mat4 mvp;
 
 void main(){
-  gl_Position = MVP * vertexPosition;
-
-  fragmentColor = vertexColor;
+  gl_Position = mvp * vert_pos;
+  frag_color = vert_color;
 }

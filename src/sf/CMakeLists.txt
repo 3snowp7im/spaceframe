@@ -1,6 +1,5 @@
 add_library(sf
   face.cc
-  geom.cc
   qtrn.cc
   sf.cc
   spheroid.cc

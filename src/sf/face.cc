@@ -1,7 +1,5 @@
 #include <sf/face.h>
 
-const sf::face::coord_t sf::face::coord_max = static_cast<long>((~0lu >> 3) + 1);
-
 std::array<sf::vec3<sf::mpf>, 3> sf::face::vert_array;
 
 constexpr sf::face::vert_access sf::face::verts;
