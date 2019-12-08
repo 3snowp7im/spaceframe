@@ -5,11 +5,12 @@ foreach(INPUT_FILE ${GENERATED_SHADER_CODE})
   set(OUTPUT_SOURCE_FILE ${INPUT_FILE}.cc)
   add_custom_command(
     OUTPUT ${OUTPUT_HEADER_FILE} ${OUTPUT_SOURCE_FILE}
-    COMMAND printf \"\#pragma once\\nnamespace spaceframe {\\nextern const char ${VAR_NAME}[]\;\\n}\\n\" > ${OUTPUT_HEADER_FILE}
-    COMMAND printf \"\#include \\\"${OUTPUT_HEADER_FILE}\\\"\\nnamespace spaceframe {\\nconst char ${VAR_NAME}[] = {\\n\" > ${OUTPUT_SOURCE_FILE}
-    COMMAND xxd -i < ${CMAKE_CURRENT_SOURCE_DIR}/${INPUT_FILE} >> ${OUTPUT_SOURCE_FILE}
-    COMMAND printf \"}\;\\n}\\n\" >> ${OUTPUT_SOURCE_FILE}
+    COMMAND printf \"\#pragma once\\nnamespace spaceframe {\\nextern unsigned char ${VAR_NAME}[]\;\\nextern unsigned int ${VAR_NAME}_len\;\\n}\\n\" > ${OUTPUT_HEADER_FILE}
+    COMMAND printf \"\#include \\\"${OUTPUT_HEADER_FILE}\\\"\\nnamespace spaceframe {\\n\" > ${OUTPUT_SOURCE_FILE}
+    COMMAND cd ${CMAKE_CURRENT_SOURCE_DIR} && xxd -i ${INPUT_FILE} >> ${CMAKE_CURRENT_BINARY_DIR}/${OUTPUT_SOURCE_FILE}
+    COMMAND printf \"}\\n\" >> ${OUTPUT_SOURCE_FILE}
     COMMENT "Converting ${INPUT_FILE} to source code"
+    DEPENDS ${INPUT_FILE}
   )
   list(APPEND GENERATED_SHADER_CODE ${OUTPUT_SOURCE_FILE})
 endforeach()

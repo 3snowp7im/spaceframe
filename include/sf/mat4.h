@@ -13,7 +13,11 @@ namespace sf {
   public:
     static mat4<T> translate(const vec3<T>&);
     static mat4<T> rotate(const qtrn&);
+    static mat4<T> scale(const vec3<T>&);
+    static mat4<T> reflect(const vec3<T>&);
+    static mat4<T> shear(const T& xy, const T& xz, const T& yx, const T& yz, const T& zx, const T& zy);
     static mat4<T> project(const T&, const T&, const T&, const T&);
+    static mat4<T> identity();
     mat4();
     mat4(const vec4<T>&, const vec4<T>&, const vec4<T>&, const vec4<T>&);
     mat4(
@@ -138,6 +142,26 @@ namespace sf {
   }
 
   template <typename T>
+  inline mat4<T> mat4<T>::scale(const vec3<T>& v) {
+    return mat4<T>(
+      v[0], T(0), T(0), T(0),
+      T(0), v[1], T(0), T(0),
+      T(0), T(0), v[2], T(0),
+      T(0), T(0), T(0), T(1)
+    );
+  }
+
+  template <typename T>
+  inline mat4<T> mat4<T>::shear(const T& xy, const T& xz, const T& yx, const T& yz, const T& zx, const T& zy) {
+    return mat4<T>(
+      T(1), xy, xz, T(0),
+      yx, T(1), yz, T(0),
+      zx, zy, T(1), T(0),
+      T(0), T(0), T(0), T(1)
+    );
+  }
+
+  template <typename T>
   inline mat4<T> mat4<T>::project(const T& fov, const T& aspect, const T& near, const T& far) {
     const auto scale = T::tan(fov / 2);
     return mat4<T>(
@@ -145,6 +169,16 @@ namespace sf {
       T(0), 1 / scale, T(0), T(0),
       T(0), T(0), -(far + near) / (far - near), -(2 * far * near) / (far - near),
       T(0), T(0), T(-1), T(0)
+    );
+  }
+
+  template <typename T>
+  mat4<T> mat4<T>::identity() {
+    return mat4<T>(
+      T(1), T(0), T(0), T(0),
+      T(0), T(1), T(0), T(0),
+      T(0), T(0), T(1), T(0),
+      T(0), T(0), T(0), T(1)
     );
   }
 

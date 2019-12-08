@@ -4,4 +4,4 @@ target_include_directories(sf_mpfr
   PUBLIC ${PROJECT_SOURCE_DIR}/include
 )
 
-target_link_libraries(sf_mpfr PUBLIC -lmpfr)
+target_link_libraries(sf_mpfr PUBLIC sf_gmp -lmpfr)

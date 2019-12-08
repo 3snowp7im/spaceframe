@@ -1,19 +1,9 @@
 #pragma once
 
+#include <bitset>
 #include <memory>
 #include <string>
-
-namespace sf {
-
-  class mpz;
-
-}
-
-namespace std {
-
-  string to_string(const sf::mpz&);
-
-}
+#include <vector>
 
 namespace sf {
 
@@ -23,121 +13,173 @@ namespace sf {
     mpz(void*);
     std::shared_ptr<void> impl;
   public:
-    static mpz pow(const mpz&, unsigned long);
+    static mpz pow(const mpz&, long unsigned);
     mpz(int);
     mpz(unsigned);
     mpz(long);
-    mpz(unsigned long);
+    mpz(long unsigned);
     mpz(const mpf&);
+    size_t byte_size() const;
+    mpz operator-() const;
     mpz operator+(const mpz&) const;
     mpz operator+(int) const;
     mpz operator+(unsigned) const;
     mpz operator+(long) const;
-    mpz operator+(unsigned long) const;
+    mpz operator+(long unsigned) const;
     mpz operator-(const mpz&) const;
     mpz operator-(int) const;
     mpz operator-(unsigned) const;
     mpz operator-(long) const;
-    mpz operator-(unsigned long) const;
+    mpz operator-(long unsigned) const;
     mpz operator*(const mpz&) const;
     mpz operator*(int) const;
     mpz operator*(unsigned) const;
     mpz operator*(long) const;
-    mpz operator*(unsigned long) const;
+    mpz operator*(long unsigned) const;
     mpz operator/(const mpz&) const;
     mpz operator/(int) const;
     mpz operator/(unsigned) const;
     mpz operator/(long) const;
-    mpz operator/(unsigned long) const;
+    mpz operator/(long unsigned) const;
     mpz operator%(const mpz&) const;
     mpz operator%(int) const;
     mpz operator%(unsigned) const;
     mpz operator%(long) const;
-    mpz operator%(unsigned long) const;
+    mpz operator%(long unsigned) const;
+    mpz operator&(const mpz&) const;
     mpz operator<<(int) const;
+    mpz operator>>(int) const;
     bool operator==(const mpz&) const;
     bool operator==(int) const;
     bool operator==(unsigned) const;
     bool operator==(long) const;
-    bool operator==(unsigned long) const;
+    bool operator==(long unsigned) const;
+    bool operator!=(const mpz&) const;
+    bool operator!=(int) const;
+    bool operator!=(unsigned) const;
+    bool operator!=(long) const;
+    bool operator!=(long unsigned) const;
     bool operator<(const mpz&) const;
     bool operator<(int) const;
     bool operator<(unsigned) const;
     bool operator<(long) const;
-    bool operator<(unsigned long) const;
+    bool operator<(long unsigned) const;
     bool operator<=(const mpz&) const;
     bool operator<=(int) const;
     bool operator<=(unsigned) const;
     bool operator<=(long) const;
-    bool operator<=(unsigned long) const;
+    bool operator<=(long unsigned) const;
     bool operator>(const mpz&) const;
     bool operator>(int) const;
     bool operator>(unsigned) const;
     bool operator>(long) const;
-    bool operator>(unsigned long) const;
+    bool operator>(long unsigned) const;
     bool operator>=(const mpz&) const;
     bool operator>=(int) const;
     bool operator>=(unsigned) const;
     bool operator>=(long) const;
-    bool operator>=(unsigned long) const;
+    bool operator>=(long unsigned) const;
     operator int() const;
     operator unsigned() const;
     operator long() const;
-    operator unsigned long() const;
+    operator long unsigned() const;
+    operator std::vector<std::bitset<8>>() const;
     mpz operator+=(const mpz&);
     mpz operator+=(int);
     mpz operator+=(unsigned);
     mpz operator+=(long);
-    mpz operator+=(unsigned long);
+    mpz operator+=(long unsigned);
     mpz operator-=(const mpz&);
     mpz operator-=(int);
     mpz operator-=(unsigned);
     mpz operator-=(long);
-    mpz operator-=(unsigned long);
+    mpz operator-=(long unsigned);
     mpz operator*=(const mpz&);
     mpz operator*=(int);
     mpz operator*=(unsigned);
     mpz operator*=(long);
-    mpz operator*=(unsigned long);
+    mpz operator*=(long unsigned);
     mpz operator/=(const mpz&);
     mpz operator/=(int);
     mpz operator/=(unsigned);
     mpz operator/=(long);
-    mpz operator/=(unsigned long);
+    mpz operator/=(long unsigned);
+    mpz operator<<=(int);
+    mpz operator>>=(int);
     friend mpz operator+(int, const mpz&);
     friend mpz operator+(unsigned, const mpz&);
     friend mpz operator+(long, const mpz&);
-    friend mpz operator+(unsigned long, const mpz&);
+    friend mpz operator+(long unsigned, const mpz&);
     friend mpz operator-(int, const mpz&);
     friend mpz operator-(unsigned, const mpz&);
     friend mpz operator-(long, const mpz&);
-    friend mpz operator-(unsigned long, const mpz&);
+    friend mpz operator-(long unsigned, const mpz&);
     friend mpz operator*(int, const mpz&);
     friend mpz operator*(unsigned, const mpz&);
     friend mpz operator*(long, const mpz&);
-    friend mpz operator*(unsigned long, const mpz&);
+    friend mpz operator*(long unsigned, const mpz&);
     friend mpz operator/(int, const mpz&);
     friend mpz operator/(unsigned, const mpz&);
     friend mpz operator/(long, const mpz&);
-    friend mpz operator/(unsigned long, const mpz&);
-    friend std::string std::to_string(const mpz&);
+    friend mpz operator/(long unsigned, const mpz&);
+    friend bool operator==(int, const mpz&);
+    friend bool operator==(unsigned, const mpz&);
+    friend bool operator==(long, const mpz&);
+    friend bool operator==(long unsigned, const mpz&);
+    friend bool operator<(int, const mpz&);
+    friend bool operator<(unsigned, const mpz&);
+    friend bool operator<(long, const mpz&);
+    friend bool operator<(long unsigned, const mpz&);
+    friend bool operator<=(int, const mpz&);
+    friend bool operator<=(unsigned, const mpz&);
+    friend bool operator<=(long, const mpz&);
+    friend bool operator<=(long unsigned, const mpz&);
+    friend bool operator>(int, const mpz&);
+    friend bool operator>(unsigned, const mpz&);
+    friend bool operator>(long, const mpz&);
+    friend bool operator>(long unsigned, const mpz&);
+    friend bool operator>=(int, const mpz&);
+    friend bool operator>=(unsigned, const mpz&);
+    friend bool operator>=(long, const mpz&);
+    friend bool operator>=(long unsigned, const mpz&);
+    std::string to_string() const;
   };
 
   mpz operator+(int, const mpz&);
   mpz operator+(unsigned, const mpz&);
   mpz operator+(long, const mpz&);
-  mpz operator+(unsigned long, const mpz&);
+  mpz operator+(long unsigned, const mpz&);
   mpz operator-(int, const mpz&);
   mpz operator-(unsigned, const mpz&);
   mpz operator-(long, const mpz&);
-  mpz operator-(unsigned long, const mpz&);
+  mpz operator-(long unsigned, const mpz&);
   mpz operator*(int, const mpz&);
   mpz operator*(unsigned, const mpz&);
   mpz operator*(long, const mpz&);
-  mpz operator*(unsigned long, const mpz&);
+  mpz operator*(long unsigned, const mpz&);
   mpz operator/(int, const mpz&);
   mpz operator/(unsigned, const mpz&);
   mpz operator/(long, const mpz&);
-  mpz operator/(unsigned long, const mpz&);
+  mpz operator/(long unsigned, const mpz&);
+  bool operator==(int, const mpz&);
+  bool operator==(unsigned, const mpz&);
+  bool operator==(long, const mpz&);
+  bool operator==(long unsigned, const mpz&);
+  bool operator<(int, const mpz&);
+  bool operator<(unsigned, const mpz&);
+  bool operator<(long, const mpz&);
+  bool operator<(long unsigned, const mpz&);
+  bool operator<=(int, const mpz&);
+  bool operator<=(unsigned, const mpz&);
+  bool operator<=(long, const mpz&);
+  bool operator<=(long unsigned, const mpz&);
+  bool operator>(int, const mpz&);
+  bool operator>(unsigned, const mpz&);
+  bool operator>(long, const mpz&);
+  bool operator>(long unsigned, const mpz&);
+  bool operator>=(int, const mpz&);
+  bool operator>=(unsigned, const mpz&);
+  bool operator>=(long, const mpz&);
+  bool operator>=(long unsigned, const mpz&);
 
 }

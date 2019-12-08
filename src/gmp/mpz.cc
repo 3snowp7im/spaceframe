@@ -32,14 +32,23 @@ sf::mpz::mpz(long v) :
   impl(std::shared_ptr<void>(new mpz_class(v))) {
 }
 
-sf::mpz::mpz(unsigned long v) :
+sf::mpz::mpz(long unsigned v) :
   impl(std::shared_ptr<void>(new mpz_class(v))) {
 }
 
-sf::mpz sf::mpz::pow(const mpz& b, unsigned long e) {
+size_t sf::mpz::byte_size() const {
+  return mpz_sizeinbase(static_cast<mpz_class*>(impl.get())->get_mpz_t(), 256);
+}
+
+sf::mpz sf::mpz::pow(const mpz& b, long unsigned e) {
   auto res = new mpz_class;
   mpz_pow_ui(res->get_mpz_t(), static_cast<mpz_class*>(b.impl.get())->get_mpz_t(), e);
   return mpz(res);
+}
+
+sf::mpz sf::mpz::operator-() const {
+  auto res = -*static_cast<mpz_class*>(impl.get());
+  return mpz(new mpz_class(res));
 }
 
 sf::mpz sf::mpz::operator+(const mpz& v) const {
@@ -62,7 +71,7 @@ sf::mpz sf::mpz::operator+(long v) const {
   return mpz(new mpz_class(res));
 }
 
-sf::mpz sf::mpz::operator+(unsigned long v) const {
+sf::mpz sf::mpz::operator+(long unsigned v) const {
   auto res = *static_cast<mpz_class*>(impl.get()) + v;
   return mpz(new mpz_class(res));
 }
@@ -87,7 +96,7 @@ sf::mpz sf::mpz::operator-(long v) const {
   return mpz(new mpz_class(res));
 }
 
-sf::mpz sf::mpz::operator-(unsigned long v) const {
+sf::mpz sf::mpz::operator-(long unsigned v) const {
   auto res = *static_cast<mpz_class*>(impl.get()) - v;
   return mpz(new mpz_class(res));
 }
@@ -112,7 +121,7 @@ sf::mpz sf::mpz::operator*(long v) const {
   return mpz(new mpz_class(res));
 }
 
-sf::mpz sf::mpz::operator*(unsigned long v) const {
+sf::mpz sf::mpz::operator*(long unsigned v) const {
   auto res = *static_cast<mpz_class*>(impl.get()) * v;
   return mpz(new mpz_class(res));
 }
@@ -137,7 +146,7 @@ sf::mpz sf::mpz::operator/(long v) const {
   return mpz(new mpz_class(res));
 }
 
-sf::mpz sf::mpz::operator/(unsigned long v) const {
+sf::mpz sf::mpz::operator/(long unsigned v) const {
   auto res = *static_cast<mpz_class*>(impl.get()) / v;
   return mpz(new mpz_class(res));
 }
@@ -162,13 +171,23 @@ sf::mpz sf::mpz::operator%(long m) const {
   return mpz(new mpz_class(res));
 }
 
-sf::mpz sf::mpz::operator%(unsigned long m) const {
+sf::mpz sf::mpz::operator%(long unsigned m) const {
   auto res = *static_cast<mpz_class*>(impl.get()) % m;
   return mpz(new mpz_class(res));
 }
 
+sf::mpz sf::mpz::operator&(const mpz& b) const {
+  auto res = *static_cast<mpz_class*>(impl.get()) & *static_cast<mpz_class*>(b.impl.get());
+  return mpz(new mpz_class(res));
+}
+
 sf::mpz sf::mpz::operator<<(int v) const {
-  auto res = *static_cast<mpz_class*>(impl.get()) % v;
+  auto res = *static_cast<mpz_class*>(impl.get()) << v;
+  return mpz(new mpz_class(res));
+}
+
+sf::mpz sf::mpz::operator>>(int v) const {
+  auto res = *static_cast<mpz_class*>(impl.get()) >> v;
   return mpz(new mpz_class(res));
 }
 
@@ -188,7 +207,27 @@ bool sf::mpz::operator==(long v) const {
   return *static_cast<mpz_class*>(impl.get()) == v;
 }
 
-bool sf::mpz::operator==(unsigned long v) const {
+bool sf::mpz::operator==(long unsigned v) const {
+  return *static_cast<mpz_class*>(impl.get()) == v;
+}
+
+bool sf::mpz::operator!=(const mpz& v) const {
+  return *static_cast<mpz_class*>(impl.get()) != *static_cast<mpz_class*>(v.impl.get());
+}
+
+bool sf::mpz::operator!=(int v) const {
+  return *static_cast<mpz_class*>(impl.get()) != v;
+}
+
+bool sf::mpz::operator!=(unsigned v) const {
+  return *static_cast<mpz_class*>(impl.get()) != v;
+}
+
+bool sf::mpz::operator!=(long v) const {
+  return *static_cast<mpz_class*>(impl.get()) != v;
+}
+
+bool sf::mpz::operator!=(long unsigned v) const {
   return *static_cast<mpz_class*>(impl.get()) == v;
 }
 
@@ -208,7 +247,7 @@ bool sf::mpz::operator<(long v) const {
   return *static_cast<mpz_class*>(impl.get()) < v;
 }
 
-bool sf::mpz::operator<(unsigned long v) const {
+bool sf::mpz::operator<(long unsigned v) const {
   return *static_cast<mpz_class*>(impl.get()) < v;
 }
 
@@ -228,7 +267,7 @@ bool sf::mpz::operator<=(long v) const {
   return *static_cast<mpz_class*>(impl.get()) <= v;
 }
 
-bool sf::mpz::operator<=(unsigned long v) const {
+bool sf::mpz::operator<=(long unsigned v) const {
   return *static_cast<mpz_class*>(impl.get()) <= v;
 }
 
@@ -248,7 +287,7 @@ bool sf::mpz::operator>(long v) const {
   return *static_cast<mpz_class*>(impl.get()) > v;
 }
 
-bool sf::mpz::operator>(unsigned long v) const {
+bool sf::mpz::operator>(long unsigned v) const {
   return *static_cast<mpz_class*>(impl.get()) > v;
 }
 
@@ -268,7 +307,7 @@ bool sf::mpz::operator>=(long v) const {
   return *static_cast<mpz_class*>(impl.get()) >= v;
 }
 
-bool sf::mpz::operator>=(unsigned long v) const {
+bool sf::mpz::operator>=(long unsigned v) const {
   return *static_cast<mpz_class*>(impl.get()) >= v;
 }
 
@@ -284,8 +323,22 @@ sf::mpz::operator long() const {
   return static_cast<mpz_class*>(impl.get())->get_si();
 }
 
-sf::mpz::operator unsigned long() const {
+sf::mpz::operator long unsigned() const {
   return static_cast<mpz_class*>(impl.get())->get_ui();
+}
+
+sf::mpz::operator std::vector<std::bitset<8>>() const {
+  std::vector<std::bitset<8>> bytes(byte_size());
+  mpz bit = 1;
+  for (int i = bytes.size() - 1; i >= 0; i--) {
+    for (int j = 0; j < 8; j++) {
+      if ((*this & bit) != 0) {
+        bytes[i] |= 1 << j;
+      }
+      bit <<= 1;
+    }
+  }
+  return bytes;
 }
 
 sf::mpz sf::mpz::operator+=(const mpz& v) {
@@ -312,7 +365,7 @@ sf::mpz sf::mpz::operator+=(long v) {
   return *this;
 }
 
-sf::mpz sf::mpz::operator+=(unsigned long v) {
+sf::mpz sf::mpz::operator+=(long unsigned v) {
   auto res = new mpz_class(*static_cast<mpz_class*>(impl.get()) + v);
   impl.reset(res);
   return *this;
@@ -342,7 +395,7 @@ sf::mpz sf::mpz::operator-=(long v) {
   return *this;
 }
 
-sf::mpz sf::mpz::operator-=(unsigned long v) {
+sf::mpz sf::mpz::operator-=(long unsigned v) {
   auto res = new mpz_class(*static_cast<mpz_class*>(impl.get()) - v);
   impl.reset(res);
   return *this;
@@ -372,7 +425,7 @@ sf::mpz sf::mpz::operator*=(long v) {
   return *this;
 }
 
-sf::mpz sf::mpz::operator*=(unsigned long v) {
+sf::mpz sf::mpz::operator*=(long unsigned v) {
   auto res = new mpz_class(*static_cast<mpz_class*>(impl.get()) * v);
   impl.reset(res);
   return *this;
@@ -402,8 +455,20 @@ sf::mpz sf::mpz::operator/=(long v) {
   return *this;
 }
 
-sf::mpz sf::mpz::operator/=(unsigned long v) {
+sf::mpz sf::mpz::operator/=(long unsigned v) {
   auto res = new mpz_class(*static_cast<mpz_class*>(impl.get()) / v);
+  impl.reset(res);
+  return *this;
+}
+
+sf::mpz sf::mpz::operator<<=(int v) {
+  auto res = new mpz_class(*static_cast<mpz_class*>(impl.get()) << v);
+  impl.reset(res);
+  return *this;
+}
+
+sf::mpz sf::mpz::operator>>=(int v) {
+  auto res = new mpz_class(*static_cast<mpz_class*>(impl.get()) >> v);
   impl.reset(res);
   return *this;
 }
@@ -423,7 +488,7 @@ sf::mpz sf::operator+(long a, const mpz& b) {
   return mpz(new mpz_class(res));
 }
 
-sf::mpz sf::operator+(unsigned long a, const mpz& b) {
+sf::mpz sf::operator+(long unsigned a, const mpz& b) {
   auto res = a + *static_cast<mpz_class*>(b.impl.get());
   return mpz(new mpz_class(res));
 }
@@ -443,7 +508,7 @@ sf::mpz sf::operator-(long a, const mpz& b) {
   return mpz(new mpz_class(res));
 }
 
-sf::mpz sf::operator-(unsigned long a, const mpz& b) {
+sf::mpz sf::operator-(long unsigned a, const mpz& b) {
   auto res = a - *static_cast<mpz_class*>(b.impl.get());
   return mpz(new mpz_class(res));
 }
@@ -463,7 +528,7 @@ sf::mpz sf::operator*(long a, const mpz& b) {
   return mpz(new mpz_class(res));
 }
 
-sf::mpz sf::operator*(unsigned long a, const mpz& b) {
+sf::mpz sf::operator*(long unsigned a, const mpz& b) {
   auto res = a * *static_cast<mpz_class*>(b.impl.get());
   return mpz(new mpz_class(res));
 }
@@ -483,11 +548,91 @@ sf::mpz sf::operator/(long a, const mpz& b) {
   return mpz(new mpz_class(res));
 }
 
-sf::mpz sf::operator/(unsigned long a, const mpz& b) {
+sf::mpz sf::operator/(long unsigned a, const mpz& b) {
   auto res = a / *static_cast<mpz_class*>(b.impl.get());
   return mpz(new mpz_class(res));
 }
 
-std::string std::to_string(const sf::mpz& v) {
-  return static_cast<mpz_class*>(v.impl.get())->get_str();
+bool sf::operator==(int a, const mpz& b) {
+  return a == *static_cast<mpz_class*>(b.impl.get());
+}
+
+bool sf::operator==(unsigned a, const mpz& b) {
+  return a == *static_cast<mpz_class*>(b.impl.get());
+}
+
+bool sf::operator==(long a, const mpz& b) {
+  return a == *static_cast<mpz_class*>(b.impl.get());
+}
+
+bool sf::operator==(long unsigned a, const mpz& b) {
+  return a == *static_cast<mpz_class*>(b.impl.get());
+}
+
+bool sf::operator<(int a, const mpz& b) {
+  return a < *static_cast<mpz_class*>(b.impl.get());
+}
+
+bool sf::operator<(unsigned a, const mpz& b) {
+  return a < *static_cast<mpz_class*>(b.impl.get());
+}
+
+bool sf::operator<(long a, const mpz& b) {
+  return a < *static_cast<mpz_class*>(b.impl.get());
+}
+
+bool sf::operator<(long unsigned a, const mpz& b) {
+  return a < *static_cast<mpz_class*>(b.impl.get());
+}
+
+bool sf::operator<=(int a, const mpz& b) {
+  return a <= *static_cast<mpz_class*>(b.impl.get());
+}
+
+bool sf::operator<=(unsigned a, const mpz& b) {
+  return a <= *static_cast<mpz_class*>(b.impl.get());
+}
+
+bool sf::operator<=(long a, const mpz& b) {
+  return a <= *static_cast<mpz_class*>(b.impl.get());
+}
+
+bool sf::operator<=(long unsigned a, const mpz& b) {
+  return a <= *static_cast<mpz_class*>(b.impl.get());
+}
+
+bool sf::operator>(int a, const mpz& b) {
+  return a <= *static_cast<mpz_class*>(b.impl.get());
+}
+
+bool sf::operator>(unsigned a, const mpz& b) {
+  return a > *static_cast<mpz_class*>(b.impl.get());
+}
+
+bool sf::operator>(long a, const mpz& b) {
+  return a > *static_cast<mpz_class*>(b.impl.get());
+}
+
+bool sf::operator>(long unsigned a, const mpz& b) {
+  return a > *static_cast<mpz_class*>(b.impl.get());
+}
+
+bool sf::operator>=(int a, const mpz& b) {
+  return a >= *static_cast<mpz_class*>(b.impl.get());
+}
+
+bool sf::operator>=(unsigned a, const mpz& b) {
+  return a >= *static_cast<mpz_class*>(b.impl.get());
+}
+
+bool sf::operator>=(long a, const mpz& b) {
+  return a >= *static_cast<mpz_class*>(b.impl.get());
+}
+
+bool sf::operator>=(long unsigned a, const mpz& b) {
+  return a >= *static_cast<mpz_class*>(b.impl.get());
+}
+
+std::string sf::mpz::to_string() const {
+  return static_cast<mpz_class*>(impl.get())->get_str();
 }

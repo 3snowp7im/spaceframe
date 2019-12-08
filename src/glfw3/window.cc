@@ -1,5 +1,6 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
+#include <unordered_map>
 #include <stdexcept>
 #include <sf/log.h>
 #include "../spaceframe/window.h"
@@ -27,6 +28,8 @@ void spaceframe::window::create(unsigned width, unsigned height, const std::stri
     glfwTerminate();
     throw std::runtime_error("Could not create window");
   }
+  // Set sticky keys so poll_events doesn't miss key presses.
+  glfwSetInputMode(window, GLFW_STICKY_KEYS, GLFW_TRUE);
   glfwMakeContextCurrent(window);
   sf::log::debug("Initalizing GLEW");
   glewExperimental = true;
@@ -51,8 +54,12 @@ void spaceframe::window::poll_events() {
   glfwPollEvents();
 }
 
-bool spaceframe::window::should_close() {
+bool spaceframe::window::get_should_close() {
   return !!glfwWindowShouldClose(static_cast<GLFWwindow*>(impl.get()));
+}
+
+void spaceframe::window::set_should_close() {
+  glfwSetWindowShouldClose(static_cast<GLFWwindow*>(impl.get()), 1);
 }
 
 void spaceframe::window::swap_buffers() {
@@ -60,3 +67,16 @@ void spaceframe::window::swap_buffers() {
 }
 
 std::unique_ptr<void, decltype(&spaceframe::window::release)> spaceframe::window::impl = std::unique_ptr<void, decltype(&spaceframe::window::release)>(nullptr, spaceframe::window::release);
+
+spaceframe::input::key_state_t spaceframe::window::get_key_state(input::key_t key) {
+  static std::unordered_map<input::key_t, int> key_map;
+  if (key_map.size() == 0) {
+    key_map.insert(std::make_pair(input::key_t::escape, GLFW_KEY_ESCAPE));
+    key_map.insert(std::make_pair(input::key_t::space, GLFW_KEY_SPACE));
+    key_map.insert(std::make_pair(input::key_t::left_shift, GLFW_KEY_LEFT_SHIFT));
+  }
+  if (glfwGetKey(static_cast<GLFWwindow*>(impl.get()), key_map.at(key)) == GLFW_PRESS) {
+    return input::key_state_t::press;
+  }
+  return input::key_state_t::release;
+}

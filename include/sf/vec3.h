@@ -2,6 +2,8 @@
 
 #include <array>
 #include <string>
+#include <sf/mpf.h>
+#include <sf/mpz.h>
 
 namespace sf {
 
@@ -11,6 +13,7 @@ namespace sf {
   public:
     static const vec3<T> zero;
     vec3();
+    vec3(const T&);
     vec3(const T&, const T&, const T&);
     typename std::array<T, 3>::iterator begin();
     typename std::array<T, 3>::const_iterator begin() const;
@@ -30,6 +33,7 @@ namespace sf {
     bool operator==(const vec3<T>&) const;
     template <typename U> operator vec3<U>() const;
     template <typename U> operator std::array<U, 3>() const;
+    template <typename U> operator std::tuple<U, U, U>() const;
     template <typename U> vec3<T> operator+(const U&) const;
     template <typename U> vec3<T> operator-(const U&) const;
     template <typename U> vec3<T> operator*(const U&) const;
@@ -39,11 +43,17 @@ namespace sf {
     template <typename U> vec3<T> operator*=(const U&);
     template <typename U> vec3<T> operator/=(const U&);
     template <typename U, typename V> friend vec3<U> operator*(const V&, const vec3<U>&);
+    std::string to_string() const;
   };
 
   template <typename T>
   inline vec3<T>::vec3() :
     xyz({0, 0, 0}) {
+  }
+
+  template <typename T>
+  inline vec3<T>::vec3(const T& v) :
+    xyz({v, v, v}) {
   }
 
   template <typename T>
@@ -138,7 +148,7 @@ namespace sf {
   template <typename T>
   template <typename U>
   inline vec3<T>::operator vec3<U>() const {
-    return vec3<U>(U(xyz[0]), U(xyz[1]), U(xyz[2]));
+    return vec3<U>(static_cast<U>(xyz[0]), static_cast<U>(xyz[1]), static_cast<U>(xyz[2]));
   }
 
   template <typename T>
@@ -149,6 +159,12 @@ namespace sf {
       static_cast<U>(xyz[1]),
       static_cast<U>(xyz[2]),
     });
+  }
+
+  template <typename T>
+  template <typename U>
+  inline vec3<T>::operator std::tuple<U, U, U>() const {
+    return std::make_tuple(static_cast<U>(xyz[0]), static_cast<U>(xyz[1]), static_cast<U>(xyz[2]));
   }
 
   template <typename T>
@@ -208,13 +224,19 @@ namespace sf {
     return vec3<U>(a * b.xyz[0], a * b.xyz[1], a * b.xyz[2]);
   }
 
-}
-
-namespace std {
-
   template <typename T>
-  inline string to_string(const sf::vec3<T>& v) {
-    return "<" + to_string(v[0]) + ", " + to_string(v[1]) + ", " + to_string(v[2]) + ">";
+  inline std::string vec3<T>::to_string() const {
+    return "<" + std::to_string(xyz[0]) + ", " + std::to_string(xyz[1]) + ", " + std::to_string(xyz[2]) + ">";
+  }
+
+  template <>
+  inline std::string vec3<mpf>::to_string() const {
+    return "<" + xyz[0].to_string() + ", " + xyz[1].to_string() + ", " + xyz[2].to_string() + ">";
+  }
+
+  template <>
+  inline std::string vec3<mpz>::to_string() const {
+    return "<" + xyz[0].to_string() + ", " + xyz[1].to_string() + ", " + xyz[2].to_string() + ">";
   }
 
 }

@@ -40,6 +40,7 @@ namespace sf {
     template <typename U> vec4<T> operator-=(const U&);
     template <typename U> vec4<T> operator*=(const U&);
     template <typename U> vec4<T> operator/=(const U&);
+    std::string to_string() const;
   };
 
   template <typename T>
@@ -216,13 +217,19 @@ namespace sf {
     return *this;
   }
 
-}
-
-namespace std {
-
   template <typename T>
-  inline string to_string(const sf::vec4<T>& v) {
-    return "<" + to_string(v[0]) + ", " + to_string(v[1]) + ", " + to_string(v[2]) + ", " + to_string(v[3]) + ">";
+  inline std::string vec4<T>::to_string() const {
+    return "<" + std::to_string(xyzw[0]) + ", " + std::to_string(xyzw[1]) + ", " + std::to_string(xyzw[2]) + ", " + std::to_string(xyzw[3]) + ">";
+  }
+
+  template <>
+  inline std::string vec4<mpf>::to_string() const {
+    return "<" + xyzw[0].to_string() + ", " + xyzw[1].to_string() + ", " + xyzw[2].to_string() + ", " + xyzw[3].to_string() + ">";
+  }
+
+  template <>
+  inline std::string vec4<mpz>::to_string() const {
+    return "<" + xyzw[0].to_string() + ", " + xyzw[1].to_string() + ", " + xyzw[2].to_string() + ", " + xyzw[3].to_string() + ">";
   }
 
 }
