@@ -147,20 +147,12 @@ int main(int argc, char** argv) {
       //const auto origin_uniform = static_cast<std::array<GLfloat, 3>>(orig);
       //glUniform3f(origin_uniform_id, origin[0], origin[1], origin[2]);
       // Upload the view transform uniform.
+      sf::log::debug("%s", camera_position.to_string().c_str());
       const auto mvp_uniform = static_cast<std::array<GLfloat, 16>>(camera_projection * sf::mat4<sf::mpf>::translate(-camera_position));
       glUniformMatrix4fv(mvp_uniform_id, 1, GL_FALSE, &mvp_uniform[0]);
       // Draw each level of detail.
       float scale = 1;
       for (int i = 0; i < verts.size(); i++) {
-
-        if (vert_counts[i]) {
-          for (int j = 0; j < vert_counts[i]; j += 3) {
-            sf::log::debug("%d %d %d", verts[i][j + 0], verts[i][j + 1], verts[i][j + 2]);
-          }
-          sf::log::debug("%f", scale);
-          exit(0);
-        }
-
         // Upload the scale uniform.
         glUniform1f(scale_uniform_id, scale);
         // Upload the offset uniform.
@@ -174,9 +166,20 @@ int main(int argc, char** argv) {
         glBufferData(GL_ARRAY_BUFFER, sizeof(GLfloat) * data_counts[i], &data[i][0], GL_DYNAMIC_DRAW);
         // Draw the level of detail.
         glDrawArrays(GL_TRIANGLES, 0, vert_counts[i] / 3);
+
+        if (vert_counts[i]) {
+          sf::log::debug("index: %d", i);
+          sf::log::debug("%f", scale);
+          sf::log::debug("%f %f %f", offset[0], offset[1], offset[2]);
+          for (int j = 0; j < vert_counts[i]; j += 3) {
+            sf::log::debug("%d %d %d", verts[i][j + 0], verts[i][j + 1], verts[i][j + 2]);
+          }
+        }
+
         scale *= 2;
       }
       exit(0);
+
       // Disable the attributes.
       glDisableVertexAttribArray(0);
       glDisableVertexAttribArray(1);

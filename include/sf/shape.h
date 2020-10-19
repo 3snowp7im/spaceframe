@@ -10,15 +10,15 @@ namespace sf {
 
   class shape {
     typedef enum {oct, tet_in, tet_out} type_t;
-    typedef enum {a, b, c, d} axis_t;
     typedef enum {in, out} dir_t;
+    typedef enum {a, b, c, d} axis_t;
     struct srange {
       face::coords_t start;
-      vec4<face::ucoord_t> len;
+      face::coords_t len;
     };
     static bool should_split(const face::range&, const srange&);
     void sample(
-      std::vector<shape>::iterator,
+      std::vector<shape>::iterator&,
       unsigned,
       unsigned,
       type_t,
@@ -53,7 +53,7 @@ namespace sf {
       std::function<void(typename std::vector<T>::iterator&, const face::range&)>
     );
     type_t type;
-    ssize_t index;
+    size_t index;
     face::range range;
     bool filled;
     bool split;
@@ -69,17 +69,15 @@ namespace sf {
   ) {
     auto& root = *shape++;
     std::vector<srange> visible_ranges(face::coord_max_log2 - lod);
-    face::coord_t len = 2;
-    face::coord_t offset = 1 << lod;
     face::coords_t curr_start = origin;
     face::coords_t curr_end = face::coords_t(face::coord_max) - origin;
+    face::coord_t len = 1 << lod;
     for (auto visible_range = visible_ranges.rbegin(); visible_range != visible_ranges.rend(); visible_range++) {
-      curr_start = ((curr_start - len) / offset) * offset;
-      curr_end = ((curr_end - len) / offset) * offset;
+      curr_start = ((((curr_start / len) - 1) * len) / 2) * 2;
+      curr_end = ((((curr_end / len) - 1) * len) / 2) * 2;
       visible_range->start = curr_start;
       visible_range->len = face::coords_t(face::coord_max) - curr_end - curr_start;
       len <<= 1;
-      offset <<= 1;
     }
     const face::range shape_range = {vec4<face::ucoord_t>(0), static_cast<face::ucoord_t>(face::coord_max)};
     root.sample(shape, 0, lod, oct, face::coord_max_log2 - lod - 1, shape_range, visible_ranges.begin(), is_filled);
@@ -87,14 +85,15 @@ namespace sf {
   }
 
   inline bool shape::should_split(const face::range& a, const srange& b) {
-    return ((a.start[0] >= b.start[0] && a.start[0] < b.start[0] + b.len[0]) || (a.start[0] + a.len >= b.start[0] && a.start[0] + a.len < b.start[0] + b.len[0]))
-        && ((a.start[1] >= b.start[1] && a.start[1] < b.start[1] + b.len[1]) || (a.start[1] + a.len >= b.start[1] && a.start[1] + a.len < b.start[1] + b.len[1]))
-        && ((a.start[2] >= b.start[2] && a.start[2] < b.start[2] + b.len[2]) || (a.start[2] + a.len >= b.start[2] && a.start[2] + a.len < b.start[2] + b.len[2]))
-        && ((a.start[3] >= b.start[3] && a.start[3] < b.start[3] + b.len[3]) || (a.start[3] + a.len >= b.start[3] && a.start[3] + a.len < b.start[3] + b.len[3]));
+    face::coords_t as(a.start);
+    return ((as[0] >= b.start[0] && as[0] < b.start[0] + b.len[0]) || (as[0] + a.len >= b.start[0] && as[0] + a.len < b.start[0] + b.len[0]))
+        && ((as[1] >= b.start[1] && as[1] < b.start[1] + b.len[1]) || (as[1] + a.len >= b.start[1] && as[1] + a.len < b.start[1] + b.len[1]))
+        && ((as[2] >= b.start[2] && as[2] < b.start[2] + b.len[2]) || (as[2] + a.len >= b.start[2] && as[2] + a.len < b.start[2] + b.len[2]))
+        && ((as[3] >= b.start[3] && as[3] < b.start[3] + b.len[3]) || (as[3] + a.len >= b.start[3] && as[3] + a.len < b.start[3] + b.len[3]));
   }
 
   inline void shape::sample(
-    std::vector<shape>::iterator shape,
+    std::vector<shape>::iterator& shape,
     unsigned lod,
     unsigned lod_max,
     type_t type,
@@ -582,7 +581,7 @@ namespace sf {
           in->filled_faces[static_cast<size_t>(axis)][static_cast<size_t>(dir_t::out)] = true;
           face_coords = in->face_coords_from_range(axis, dir_t::out);
           len = in->range.len;
-        } else if (!out->filled && !out->filled_faces[static_cast<size_t>(axis)][static_cast<size_t>(dir_t::in)]) {
+        } else if (out->filled && !out->filled_faces[static_cast<size_t>(axis)][static_cast<size_t>(dir_t::in)]) {
           out->filled_faces[static_cast<size_t>(axis)][static_cast<size_t>(dir_t::in)] = true;
           face_coords = out->face_coords_from_range(axis, dir_t::in);
           len = out->range.len;

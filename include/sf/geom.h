@@ -156,9 +156,10 @@ namespace sf {
     const auto vert = face::vert_from_vec(coords);
     const auto origin = face::point_from_vert(face::vert_from_vec(vec));
     auto point = face::point_from_vert(vert);
+    face::coord_t len = 1;
     for (auto offset = offsets.rbegin(); offset != offsets.rend(); offset++) {
-      *offset = origin - point;
-      point /= 2;
+      *offset = origin - (point / len) * len;
+      len <<= 1;
     }
     auto vert_iters = iters_from_vec(verts);
     auto data_iters = iters_from_vec(data);
