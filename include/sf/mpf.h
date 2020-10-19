@@ -1,6 +1,7 @@
 #pragma once
 
 #include <memory>
+#include <sf/sf.h>
 #include <string>
 
 namespace sf {

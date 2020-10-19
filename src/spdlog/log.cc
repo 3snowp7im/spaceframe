@@ -1,6 +1,7 @@
 #include <cstdarg>
 #include <vector>
 #include <spdlog/spdlog.h>
+#include <spdlog/sinks/stdout_color_sinks.h>
 #include <sf/log.h>
 
 class log_wrapper {

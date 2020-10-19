@@ -1,0 +1,8 @@
+Installing dependencies:
+```bash
+sudo apt-get install \
+     libglfw3-dev \
+     libglew-dev \
+     libmpfrc++-dev \
+     libspdlog-dev \
+```

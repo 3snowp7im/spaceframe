@@ -42,6 +42,7 @@ sf::face::face(const qtrn& orientation) :
 
 sf::face& sf::face::operator=(const face& v) {
   orientation = v.orientation;
+  return *this;
 }
 
 bool sf::face::is_point_in_bounds(const vec3<mpf>& p) const {

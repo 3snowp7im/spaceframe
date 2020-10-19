@@ -5,6 +5,7 @@
 #include <sf/mpf.h>
 #include <sf/mpz.h>
 #include <sf/qtrn.h>
+#include <sf/sf.h>
 #include <sf/vec3.h>
 #include <sf/vec4.h>
 
